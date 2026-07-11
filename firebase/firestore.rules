@@ -1,0 +1,263 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+
+    /// Returns true if the request is made by an authenticated user.
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    /// Returns true if the authenticated user's UID matches the given userId.
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    /// Returns true if the authenticated user is a member of the given family,
+    /// meaning their UID appears in either the parentIds or childIds array
+    /// of the family document.
+    function isFamilyMember(familyId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/families/$(familyId)) &&
+        (
+          request.auth.uid in get(/databases/$(database)/documents/families/$(familyId)).data.parentIds ||
+          request.auth.uid in get(/databases/$(database)/documents/families/$(familyId)).data.childIds
+        );
+    }
+
+    /// Returns true if the authenticated user is a parent in the given family,
+    /// meaning their UID appears in the parentIds array of the family document.
+    function isParentInFamily(familyId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/families/$(familyId)) &&
+        request.auth.uid in get(/databases/$(database)/documents/families/$(familyId)).data.parentIds;
+    }
+
+    /// Returns true if the authenticated user is the owner of the given device,
+    /// meaning their UID matches the userId field of the device document.
+    function isDeviceOwner(deviceId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/devices/$(deviceId)) &&
+        request.auth.uid == get(/databases/$(database)/documents/devices/$(deviceId)).data.userId;
+    }
+
+    /// Returns true if the authenticated user belongs to the same family as
+    /// the device, by checking the device's familyId against family membership.
+    function isDeviceFamilyMember(deviceId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/devices/$(deviceId)) &&
+        isFamilyMember(get(/databases/$(database)/documents/devices/$(deviceId)).data.familyId);
+    }
+
+    // ============================================================
+    // USERS COLLECTION
+    // ============================================================
+    // Each user document stores profile info, role (parent/child), and familyId.
+    // Users can only read/write their own document.
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) &&
+        request.resource.data.keys().hasAll(['email', 'displayName', 'role', 'familyId', 'createdAt']) &&
+        request.resource.data.role in ['parent', 'child'];
+      allow update: if isOwner(userId) &&
+        // Prevent changing immutable fields
+        request.resource.data.email == resource.data.email &&
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false; // Users cannot delete their own accounts via client SDK
+    }
+
+    // ============================================================
+    // FAMILIES COLLECTION
+    // ============================================================
+    // Family documents contain parentIds[], childIds[], familyName, inviteCode, createdAt.
+    // Only parents can create/update family docs. All members can read.
+    match /families/{familyId} {
+      allow read: if isFamilyMember(familyId);
+      allow create: if isAuthenticated() &&
+        request.resource.data.keys().hasAll(['familyName', 'parentIds', 'childIds', 'inviteCode', 'createdAt']) &&
+        request.auth.uid in request.resource.data.parentIds;
+      allow update: if isParentInFamily(familyId) &&
+        // Preserve immutable fields
+        request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false; // Families cannot be deleted from client
+    }
+
+    // ============================================================
+    // DEVICES COLLECTION
+    // ============================================================
+    // Each device document stores: userId, familyId, deviceName, platform, model,
+    // androidVersion, lastSeen, isOnline, createdAt.
+    // Device owner can create/update. Family members can read.
+    match /devices/{deviceId} {
+      allow read: if isDeviceFamilyMember(deviceId);
+      allow create: if isAuthenticated() &&
+        request.resource.data.keys().hasAll(['userId', 'familyId', 'deviceName', 'platform', 'createdAt']) &&
+        request.auth.uid == request.resource.data.userId &&
+        isFamilyMember(request.resource.data.familyId);
+      allow update: if isDeviceOwner(deviceId) &&
+        // Cannot reassign device to different user or family
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.familyId == resource.data.familyId &&
+        request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isDeviceOwner(deviceId);
+    }
+
+    // ============================================================
+    // DEVICE STATUS COLLECTION
+    // ============================================================
+    // Real-time device status: deviceId, userId, familyId, batteryLevel,
+    // isCharging, isScreenOn, networkType, lastUpdated.
+    // Only device owner writes. Family members can read.
+    match /deviceStatus/{deviceId} {
+      allow read: if isDeviceFamilyMember(deviceId);
+      allow create: if isDeviceOwner(deviceId) &&
+        request.resource.data.keys().hasAll(['deviceId', 'userId', 'familyId', 'batteryLevel', 'isScreenOn', 'lastUpdated']);
+      allow update: if isDeviceOwner(deviceId) &&
+        request.resource.data.deviceId == resource.data.deviceId &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.familyId == resource.data.familyId;
+      allow delete: if false;
+    }
+
+    // ============================================================
+    // APP USAGE COLLECTION
+    // ============================================================
+    // Top-level document per device: deviceId, userId, familyId.
+    // Nested daily/{date} documents contain per-app usage maps.
+    // Subcollections: apps/{packageName} for detailed per-app records.
+    match /appUsage/{deviceId} {
+      allow read: if isDeviceFamilyMember(deviceId);
+      allow create: if isDeviceOwner(deviceId) &&
+        request.resource.data.keys().hasAll(['deviceId', 'userId', 'familyId']);
+      allow update: if isDeviceOwner(deviceId) &&
+        request.resource.data.deviceId == resource.data.deviceId &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.familyId == resource.data.familyId;
+      allow delete: if false;
+
+      // Daily usage summaries: totalScreenTime, appUsageMap, syncedAt
+      match /daily/{date} {
+        allow read: if isDeviceFamilyMember(deviceId);
+        allow create: if isDeviceOwner(deviceId) &&
+          request.resource.data.keys().hasAll(['date', 'totalScreenTimeMinutes', 'appUsageMap', 'syncedAt']);
+        allow update: if isDeviceOwner(deviceId) &&
+          request.resource.data.date == resource.data.date;
+        allow delete: if false;
+
+        // Per-app detailed usage: packageName, appName, categoryTag,
+        // usageMinutes, openCount, firstUsed, lastUsed
+        match /apps/{packageName} {
+          allow read: if isDeviceFamilyMember(deviceId);
+          allow create: if isDeviceOwner(deviceId) &&
+            request.resource.data.keys().hasAll(['packageName', 'appName', 'usageMinutes', 'openCount']);
+          allow update: if isDeviceOwner(deviceId) &&
+            request.resource.data.packageName == resource.data.packageName;
+          allow delete: if false;
+        }
+      }
+    }
+
+    // ============================================================
+    // STUDY ANALYTICS COLLECTION
+    // ============================================================
+    // Top-level per-user document: userId, familyId.
+    // Nested daily/{date} for daily study metrics.
+    match /studyAnalytics/{userId} {
+      allow read: if isOwner(userId) ||
+        (
+          isAuthenticated() &&
+          exists(/databases/$(database)/documents/users/$(userId)) &&
+          isParentInFamily(get(/databases/$(database)/documents/users/$(userId)).data.familyId)
+        );
+      allow create: if isOwner(userId) &&
+        request.resource.data.keys().hasAll(['userId', 'familyId']);
+      allow update: if isOwner(userId) &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.familyId == resource.data.familyId;
+      allow delete: if false;
+
+      // Daily study records: date, totalStudyMinutes, focusScore,
+      // studySessions[], breaksTaken, productivityRating, syncedAt
+      match /daily/{date} {
+        allow read: if isOwner(userId) ||
+          (
+            isAuthenticated() &&
+            exists(/databases/$(database)/documents/users/$(userId)) &&
+            isParentInFamily(get(/databases/$(database)/documents/users/$(userId)).data.familyId)
+          );
+        allow create: if isOwner(userId) &&
+          request.resource.data.keys().hasAll(['date', 'totalStudyMinutes', 'focusScore', 'syncedAt']);
+        allow update: if isOwner(userId) &&
+          request.resource.data.date == resource.data.date;
+        allow delete: if false;
+      }
+    }
+
+    // ============================================================
+    // REPORTS COLLECTION
+    // ============================================================
+    // Generated reports: familyId, childUserId, reportType (daily/weekly/monthly),
+    // generatedAt, periodStart, periodEnd, data (summary map).
+    // Parents in the family can read. System (or parent) creates reports.
+    match /reports/{reportId} {
+      allow read: if isAuthenticated() &&
+        exists(/databases/$(database)/documents/reports/$(reportId)) &&
+        isParentInFamily(resource.data.familyId);
+      allow create: if isAuthenticated() &&
+        request.resource.data.keys().hasAll(['familyId', 'childUserId', 'reportType', 'generatedAt', 'periodStart', 'periodEnd', 'data']) &&
+        isParentInFamily(request.resource.data.familyId) &&
+        request.resource.data.reportType in ['daily', 'weekly', 'monthly'];
+      allow update: if false; // Reports are immutable once generated
+      allow delete: if isAuthenticated() &&
+        isParentInFamily(resource.data.familyId);
+    }
+
+    // ============================================================
+    // NOTIFICATIONS COLLECTION
+    // ============================================================
+    // Notification documents: familyId, targetUserId, sourceUserId, type,
+    // title, body, data (map), isRead, createdAt.
+    // Family members can read notifications targeted to them or the family.
+    // Children can create notifications (e.g., alerts to parents).
+    // Parents can create notifications (e.g., reminders to children).
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() &&
+        (
+          request.auth.uid == resource.data.targetUserId ||
+          isFamilyMember(resource.data.familyId)
+        );
+      allow create: if isAuthenticated() &&
+        request.resource.data.keys().hasAll(['familyId', 'targetUserId', 'sourceUserId', 'type', 'title', 'body', 'isRead', 'createdAt']) &&
+        request.auth.uid == request.resource.data.sourceUserId &&
+        isFamilyMember(request.resource.data.familyId) &&
+        request.resource.data.isRead == false;
+      allow update: if isAuthenticated() &&
+        (
+          // Target user can mark as read
+          (request.auth.uid == resource.data.targetUserId &&
+           request.resource.data.isRead == true &&
+           request.resource.data.keys().hasOnly(resource.data.keys()) &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']))
+          ||
+          // Parent in family can update notifications
+          isParentInFamily(resource.data.familyId)
+        );
+      allow delete: if isAuthenticated() &&
+        (
+          request.auth.uid == resource.data.targetUserId ||
+          isParentInFamily(resource.data.familyId)
+        );
+    }
+
+    // ============================================================
+    // CATCH-ALL: Deny everything else
+    // ============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
