@@ -29,7 +29,7 @@ class FirestoreService {
   /// Creates or overwrites a user document at `users/{user.id}`.
   Future<void> createUser(UserModel user) async {
     try {
-      await _db.collection('users').doc(user.id).set(user.toMap());
+      await _db.collection('users').doc(user.id).set(user.toFirestore());
       AppLogger.info('User created: ${user.id}');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to create user ${user.id}',
@@ -45,7 +45,7 @@ class FirestoreService {
     try {
       final doc = await _db.collection('users').doc(userId).get();
       if (!doc.exists || doc.data() == null) return null;
-      return UserModel.fromMap(doc.data()!);
+      return UserModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get user $userId',
           error: e, stackTrace: stackTrace);
@@ -72,7 +72,7 @@ class FirestoreService {
   /// Creates or overwrites a family document at `families/{family.id}`.
   Future<void> createFamily(FamilyModel family) async {
     try {
-      await _db.collection('families').doc(family.id).set(family.toMap());
+      await _db.collection('families').doc(family.id).set(family.toFirestore());
       AppLogger.info('Family created: ${family.id}');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to create family ${family.id}',
@@ -88,7 +88,7 @@ class FirestoreService {
     try {
       final doc = await _db.collection('families').doc(familyId).get();
       if (!doc.exists || doc.data() == null) return null;
-      return FamilyModel.fromMap(doc.data()!);
+      return FamilyModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get family $familyId',
           error: e, stackTrace: stackTrace);
@@ -108,7 +108,7 @@ class FirestoreService {
           .get();
 
       if (query.docs.isEmpty) return null;
-      return FamilyModel.fromMap(query.docs.first.data());
+      return FamilyModel.fromJson(query.docs.first.data());
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get family by pairing code',
           error: e, stackTrace: stackTrace);
@@ -124,6 +124,24 @@ class FirestoreService {
       AppLogger.info('Family updated: $familyId');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to update family $familyId',
+          error: e, stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
+  /// Returns all families where [userId] is listed as a parent.
+  Future<List<FamilyModel>> getFamiliesForUser(String userId) async {
+    try {
+      final query = await _db
+          .collection('families')
+          .where('parentIds', arrayContains: userId)
+          .get();
+
+      return query.docs
+          .map((doc) => FamilyModel.fromJson(doc.data()))
+          .toList();
+    } catch (e, stackTrace) {
+      AppLogger.error('Failed to get families for user $userId',
           error: e, stackTrace: stackTrace);
       rethrow;
     }
@@ -172,7 +190,7 @@ class FirestoreService {
   /// Creates or overwrites a device document at `devices/{device.id}`.
   Future<void> createDevice(DeviceModel device) async {
     try {
-      await _db.collection('devices').doc(device.id).set(device.toMap());
+      await _db.collection('devices').doc(device.id).set(device.toFirestore());
       AppLogger.info('Device created: ${device.id}');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to create device ${device.id}',
@@ -188,7 +206,7 @@ class FirestoreService {
     try {
       final doc = await _db.collection('devices').doc(deviceId).get();
       if (!doc.exists || doc.data() == null) return null;
-      return DeviceModel.fromMap(doc.data()!);
+      return DeviceModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get device $deviceId',
           error: e, stackTrace: stackTrace);
@@ -205,7 +223,7 @@ class FirestoreService {
           .get();
 
       return query.docs
-          .map((doc) => DeviceModel.fromMap(doc.data()))
+          .map((doc) => DeviceModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get devices for family $familyId',
@@ -255,7 +273,7 @@ class FirestoreService {
       await _db
           .collection('device_status')
           .doc(status.deviceId)
-          .set(status.toMap());
+          .set(status.toFirestore());
       AppLogger.info('Device status updated for ${status.deviceId}');
     } catch (e, stackTrace) {
       AppLogger.error(
@@ -274,7 +292,7 @@ class FirestoreService {
       final doc =
           await _db.collection('device_status').doc(deviceId).get();
       if (!doc.exists || doc.data() == null) return null;
-      return DeviceStatusModel.fromMap(doc.data()!);
+      return DeviceStatusModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get device status for $deviceId',
           error: e, stackTrace: stackTrace);
@@ -292,7 +310,7 @@ class FirestoreService {
         .snapshots()
         .map((snapshot) {
       if (!snapshot.exists || snapshot.data() == null) return null;
-      return DeviceStatusModel.fromMap(snapshot.data()!);
+      return DeviceStatusModel.fromJson(snapshot.data()!);
     }).handleError((Object e, StackTrace stackTrace) {
       AppLogger.error('Error streaming device status for $deviceId',
           error: e, stackTrace: stackTrace);
@@ -307,7 +325,7 @@ class FirestoreService {
   Future<void> saveDailyUsage(DailyUsageModel usage) async {
     try {
       final docId = '${usage.deviceId}_${usage.date}';
-      await _db.collection('daily_usage').doc(docId).set(usage.toMap());
+      await _db.collection('daily_usage').doc(docId).set(usage.toFirestore());
       AppLogger.info('Daily usage saved: $docId');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to save daily usage',
@@ -326,7 +344,7 @@ class FirestoreService {
       final docId = '${deviceId}_$date';
       final doc = await _db.collection('daily_usage').doc(docId).get();
       if (!doc.exists || doc.data() == null) return null;
-      return DailyUsageModel.fromMap(doc.data()!);
+      return DailyUsageModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get daily usage for $deviceId on $date',
           error: e, stackTrace: stackTrace);
@@ -353,7 +371,7 @@ class FirestoreService {
           .get();
 
       return query.docs
-          .map((doc) => DailyUsageModel.fromMap(doc.data()))
+          .map((doc) => DailyUsageModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
       AppLogger.error(
@@ -375,7 +393,7 @@ class FirestoreService {
       await _db
           .collection('study_analytics')
           .doc(docId)
-          .set(analytics.toMap());
+          .set(analytics.toFirestore());
       AppLogger.info('Study analytics saved: $docId');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to save study analytics',
@@ -395,7 +413,7 @@ class FirestoreService {
       final doc =
           await _db.collection('study_analytics').doc(docId).get();
       if (!doc.exists || doc.data() == null) return null;
-      return StudyAnalyticsModel.fromMap(doc.data()!);
+      return StudyAnalyticsModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
       AppLogger.error(
           'Failed to get study analytics for $deviceId on $date',
@@ -424,7 +442,7 @@ class FirestoreService {
           .get();
 
       return query.docs
-          .map((doc) => StudyAnalyticsModel.fromMap(doc.data()))
+          .map((doc) => StudyAnalyticsModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
       AppLogger.error(
@@ -442,7 +460,7 @@ class FirestoreService {
   /// Saves a report document at `reports/{report.id}`.
   Future<void> saveReport(ReportModel report) async {
     try {
-      await _db.collection('reports').doc(report.id).set(report.toMap());
+      await _db.collection('reports').doc(report.id).set(report.toFirestore());
       AppLogger.info('Report saved: ${report.id}');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to save report ${report.id}',
@@ -462,7 +480,7 @@ class FirestoreService {
           .get();
 
       return query.docs
-          .map((doc) => ReportModel.fromMap(doc.data()))
+          .map((doc) => ReportModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get reports for device $deviceId',
@@ -484,7 +502,7 @@ class FirestoreService {
           .get();
 
       return query.docs
-          .map((doc) => ReportModel.fromMap(doc.data()))
+          .map((doc) => ReportModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
       AppLogger.error(
@@ -505,7 +523,7 @@ class FirestoreService {
       await _db
           .collection('notifications')
           .doc(notification.id)
-          .set(notification.toMap());
+          .set(notification.toFirestore());
       AppLogger.info('Notification saved: ${notification.id}');
     } catch (e, stackTrace) {
       AppLogger.error(
@@ -531,7 +549,7 @@ class FirestoreService {
           .get();
 
       return query.docs
-          .map((doc) => NotificationModel.fromMap(doc.data()))
+          .map((doc) => NotificationModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
       AppLogger.error(
@@ -543,7 +561,9 @@ class FirestoreService {
   }
 
   /// Marks the notification with [notificationId] as read.
-  Future<void> markAsRead(String notificationId) async {
+  ///
+  /// [familyId] is accepted for API consistency but not used in the query.
+  Future<void> markNotificationAsRead(String familyId, String notificationId) async {
     try {
       await _db.collection('notifications').doc(notificationId).update({
         'read': true,
@@ -557,6 +577,10 @@ class FirestoreService {
       rethrow;
     }
   }
+
+  /// Alias for backward compatibility.
+  Future<void> markAsRead(String notificationId) =>
+      markNotificationAsRead('', notificationId);
 
   /// Returns the number of unread notifications for [familyId].
   Future<int> getUnreadCount(String familyId) async {
@@ -587,7 +611,7 @@ class FirestoreService {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
-            .map((doc) => NotificationModel.fromMap(doc.data()))
+            .map((doc) => NotificationModel.fromJson(doc.data()))
             .toList())
         .handleError((Object e, StackTrace stackTrace) {
       AppLogger.error(

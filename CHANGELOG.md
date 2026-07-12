@@ -15,6 +15,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `parent_app` screens including Splash, Login, Register, Dashboard, Pairing, Device List, App Usage, Analytics, Reports, Notifications, and Settings.
 - Project state tracking and changelog setup.
 
+## [0.1.1] - 2026-07-13
+
+### Fixed
+- **Critical:** All `toMap()`/`fromMap()` calls in `FirestoreService` changed to `toFirestore()`/`fromJson()` to match model APIs (~30 compile errors).
+- **Critical:** Added missing `getFamiliesForUser()` method to `FirestoreService`.
+- **Critical:** Fixed `markNotificationAsRead()` signature mismatch (was `markAsRead(id)`, callers expected `markNotificationAsRead(familyId, id)`).
+
+### Added
+- `AndroidManifest.xml` for parent app (was completely missing).
+- `.gitignore` for the monorepo.
+- Accurate `PROJECT_STATE.md` reflecting true completion status.
+
 ### Changed
 - None
 
