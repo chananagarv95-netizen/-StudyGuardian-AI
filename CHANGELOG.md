@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Firebase integration scaffolding and documentation.
 - `parent_app` structure, pubspec, routers, DI, and core utilities.
 - `parent_app` UI widgets, charts, and shimmer loading indicators.
-- `parent_app` screens including Splash, Login, Register, Dashboard, Pairing, Device List, App Usage, Analytics, Reports, and Notifications.
+- `parent_app` screens including Splash, Login, Register, Dashboard, Pairing, Device List, App Usage, Analytics, Reports, Notifications, and Settings.
 - Project state tracking and changelog setup.
 
 ### Changed

@@ -8,10 +8,9 @@ v0.1.0
 - Firebase configuration and documentation placeholders
 - Parent App foundation (UI widgets, charts, core services, routers, DI)
 - Parent App auth screens (Login, Register, Splash)
-- Parent App main screens (Dashboard, Pairing, QR Scan, Device List, Reports, Notifications, App Usage, Device Info, Study Analytics)
+- Parent App main screens (Dashboard, Pairing, QR Scan, Device List, Reports, Notifications, App Usage, Device Info, Study Analytics, Settings)
 
 ## Features In Progress
-- Parent App Settings Screen (missing)
 - Child App full implementation (Dart + Kotlin native code)
 
 ## Remaining Features
@@ -35,7 +34,6 @@ v0.1.0
 - Monorepo style using a `shared` package
 
 ## Next Recommended Task
-- Implement the Parent App Settings Screen
 - Build the Child App (pubspec, entry points, routers, platform channels)
 
 ## Last Commit Hash
