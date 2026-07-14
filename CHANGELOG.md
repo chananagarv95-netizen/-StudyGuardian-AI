@@ -27,14 +27,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.gitignore` for the monorepo.
 - Accurate `PROJECT_STATE.md` reflecting true completion status.
 
-### Changed
-- None
+## [0.2.0] - 2026-07-14
 
-### Fixed
-- None
+### Added
+- **Child App Foundation:**
+  - `pubspec.yaml` with all dependencies (WorkManager, battery_plus, device_info_plus, permission_handler, etc.)
+  - `main.dart` with Firebase, Hive, WorkManager, and local notifications initialization.
+  - `app.dart` root widget with shared theme integration.
+  - `core/di/providers.dart` — Riverpod DI with auth, family, device, monitoring, and permission providers.
+  - `core/router/app_router.dart` — GoRouter with auth-aware redirects and 6 route definitions.
+  - `core/constants/platform_channels.dart` — MethodChannel name and all method identifiers.
+  - `core/services/platform_channel_service.dart` — Dart bridge for all native calls (usage stats, device info, foreground service, battery optimization, installed apps).
+  - `core/services/work_manager_service.dart` — periodic 15-minute sync with offline queuing and retry.
+  - `core/utils/extensions.dart` — BuildContext, DateTime, String, num extensions (consistent with parent app).
+  - `domain/repositories/` — 4 abstract interfaces (auth, device, usage, sync).
+  - `data/repositories/` — 4 implementations wired to shared services and platform channels.
+  - `android/app/src/main/AndroidManifest.xml` — all monitoring permissions (USAGE_STATS, FOREGROUND_SERVICE, BOOT_COMPLETED, QUERY_ALL_PACKAGES, etc.)
+  - `android/app/src/main/kotlin/.../MainActivity.kt` — full MethodChannel handler with UsageStatsManager, BatteryManager, StorageInfo, RAM, Network, and installed apps queries.
+- `getFamiliesForChild()` method added to shared `FirestoreService`.
 
-### Removed
-- None
-
-### Improved
-- None

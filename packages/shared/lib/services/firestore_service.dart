@@ -147,6 +147,24 @@ class FirestoreService {
     }
   }
 
+  /// Returns all families where [userId] is listed as a child.
+  Future<List<FamilyModel>> getFamiliesForChild(String userId) async {
+    try {
+      final query = await _db
+          .collection('families')
+          .where('childIds', arrayContains: userId)
+          .get();
+
+      return query.docs
+          .map((doc) => FamilyModel.fromJson(doc.data()))
+          .toList();
+    } catch (e, stackTrace) {
+      AppLogger.error('Failed to get families for child $userId',
+          error: e, stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
   /// Adds [parentId] to the `parentIds` array on the family document.
   ///
   /// Uses [FieldValue.arrayUnion] so duplicates are automatically ignored.
