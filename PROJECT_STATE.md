@@ -1,7 +1,7 @@
 # Project State
 
 ## Current Version
-v0.2.0
+v0.3.0
 
 ## Completed Features
 - Shared package initialization (Models, Services, Utils, Theme, Constants)
@@ -12,17 +12,17 @@ v0.2.0
 - Parent App Android Manifest
 - Child App foundation (pubspec, main.dart, app.dart, DI, routing, services, repositories)
 - Child App platform channel architecture (Dart ↔ Kotlin MethodChannel)
-- Child App Kotlin MainActivity with UsageStats, DeviceInfo, BatteryOptimization, InstalledApps
 - Child App WorkManager for periodic background sync
 - Child App Android Manifest with all required permissions
+- Child App Kotlin MainActivity with UsageStats, DeviceInfo, BatteryOptimization, InstalledApps
+- Child App Kotlin Native Services (ForegroundMonitoringService, BootReceiver)
+- Child App full UI implementation (login, join family, home, permissions, settings screens)
 - Project hygiene (.gitignore, PROJECT_STATE, CHANGELOG)
 
 ## Features In Progress
-- Child App UI screens (splash, login, join family, home, permissions, settings)
+- None
 
 ## Remaining Features
-- Child app full UI implementation (screens and widgets)
-- Child app Kotlin native services (ForegroundService, SyncWorker, BootReceiver, PackageReceiver)
 - Report detail real data binding
 - Unit and widget tests
 - End-to-end testing and deployment

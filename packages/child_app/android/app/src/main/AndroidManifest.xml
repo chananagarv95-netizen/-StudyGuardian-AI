@@ -74,6 +74,16 @@
             </intent-filter>
         </receiver>
 
+        <!-- Foreground Monitoring Service -->
+        <service
+            android:name=".services.ForegroundMonitoringService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                      android:value="Monitoring child device usage and health" />
+        </service>
+
         <meta-data android:name="flutterEmbedding" android:value="2" />
     </application>
 

@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../di/providers.dart';
+import '../../presentation/screens/login_screen.dart';
+import '../../presentation/screens/join_family_screen.dart';
+import '../../presentation/screens/home_screen.dart';
+import '../../presentation/screens/permissions_screen.dart';
+import '../../presentation/screens/settings_screen.dart';
 
 /// Placeholder screens — these will be replaced by full implementations
 /// in a future feature build. They exist now so the router compiles.
@@ -46,61 +51,6 @@ class _SplashScreen extends ConsumerWidget {
   }
 }
 
-class _LoginScreen extends StatelessWidget {
-  const _LoginScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Login — to be implemented')),
-    );
-  }
-}
-
-class _JoinFamilyScreen extends StatelessWidget {
-  const _JoinFamilyScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Join Family — to be implemented')),
-    );
-  }
-}
-
-class _HomeScreen extends StatelessWidget {
-  const _HomeScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Home — to be implemented')),
-    );
-  }
-}
-
-class _PermissionsScreen extends StatelessWidget {
-  const _PermissionsScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Permissions — to be implemented')),
-    );
-  }
-}
-
-class _SettingsScreen extends StatelessWidget {
-  const _SettingsScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Settings — to be implemented')),
-    );
-  }
-}
-
 /// GoRouter provider with auth-aware redirect logic for the child app.
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -131,23 +81,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const _LoginScreen(),
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: '/join-family',
-        builder: (context, state) => const _JoinFamilyScreen(),
+        builder: (context, state) => const JoinFamilyScreen(),
       ),
       GoRoute(
         path: '/home',
-        builder: (context, state) => const _HomeScreen(),
+        builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
         path: '/permissions',
-        builder: (context, state) => const _PermissionsScreen(),
+        builder: (context, state) => const PermissionsScreen(),
       ),
       GoRoute(
         path: '/settings',
-        builder: (context, state) => const _SettingsScreen(),
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );

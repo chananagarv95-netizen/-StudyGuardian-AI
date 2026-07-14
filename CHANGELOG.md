@@ -27,6 +27,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.gitignore` for the monorepo.
 - Accurate `PROJECT_STATE.md` reflecting true completion status.
 
+## [0.3.0] - 2026-07-14
+
+### Added
+- **Child App UI Implementation:**
+  - Added `login_screen.dart` with Google Sign-In setup.
+  - Added `join_family_screen.dart` to link child device to a family via code.
+  - Added `permissions_screen.dart` to guide users in granting required monitoring permissions.
+  - Added `home_screen.dart` dashboard showing connection and service status.
+  - Added `settings_screen.dart` with manual sync and sign out options.
+  - Updated `app_router.dart` to use the actual screens instead of placeholders.
+- **Child App Native Services:**
+  - Added `ForegroundMonitoringService.kt` to ensure the app stays alive for monitoring.
+  - Added `BootReceiver.kt` to automatically restart the foreground service on device boot.
+  - Updated `MainActivity.kt` to handle starting/stopping the foreground service.
+  - Updated `AndroidManifest.xml` to declare the foreground service.
+
 ## [0.2.0] - 2026-07-14
 
 ### Added

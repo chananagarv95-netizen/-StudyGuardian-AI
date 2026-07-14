@@ -66,14 +66,21 @@ class MainActivity : FlutterActivity() {
 
                     // ── Foreground Service ───────────────────────────────
                     "startForegroundService" -> {
-                        // Will be implemented when ForegroundService class is built
+                        val serviceIntent = Intent(this@MainActivity, com.studyguardian.child.services.ForegroundMonitoringService::class.java)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            startForegroundService(serviceIntent)
+                        } else {
+                            startService(serviceIntent)
+                        }
                         result.success(null)
                     }
                     "stopForegroundService" -> {
+                        val serviceIntent = Intent(this@MainActivity, com.studyguardian.child.services.ForegroundMonitoringService::class.java)
+                        stopService(serviceIntent)
                         result.success(null)
                     }
                     "isForegroundServiceRunning" -> {
-                        result.success(false) // Placeholder until service is built
+                        result.success(com.studyguardian.child.services.ForegroundMonitoringService.isRunning)
                     }
 
                     // ── Battery Optimization ─────────────────────────────

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../data/repositories/device_repository_impl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared/services/auth_service.dart';
@@ -83,6 +84,13 @@ final deviceProvider = FutureProvider<DeviceModel?>((ref) async {
 
   final firestoreService = ref.watch(firestoreServiceProvider);
   return firestoreService.getDevice(deviceId);
+});
+
+/// Provides the device repository singleton.
+final deviceRepositoryProvider = Provider<DeviceRepositoryImpl>((ref) {
+  return DeviceRepositoryImpl(
+    firestoreService: ref.watch(firestoreServiceProvider),
+  );
 });
 
 // ─── Monitoring State Providers ──────────────────────────────────────────────
