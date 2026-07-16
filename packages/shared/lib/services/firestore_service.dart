@@ -494,11 +494,11 @@ class FirestoreService {
       final query = await _db
           .collection('reports')
           .where('deviceId', isEqualTo: deviceId)
-          .orderBy('createdAt', descending: true)
+          .orderBy('generatedAt', descending: true)
           .get();
 
       return query.docs
-          .map((doc) => ReportModel.fromJson(doc.data()))
+          .map((doc) => ReportModel.fromFirestore(doc))
           .toList();
     } catch (e, stackTrace) {
       AppLogger.error('Failed to get reports for device $deviceId',
@@ -516,11 +516,11 @@ class FirestoreService {
           .collection('reports')
           .where('deviceId', isEqualTo: deviceId)
           .where('type', isEqualTo: type.name)
-          .orderBy('createdAt', descending: true)
+          .orderBy('generatedAt', descending: true)
           .get();
 
       return query.docs
-          .map((doc) => ReportModel.fromJson(doc.data()))
+          .map((doc) => ReportModel.fromFirestore(doc))
           .toList();
     } catch (e, stackTrace) {
       AppLogger.error(

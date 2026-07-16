@@ -146,10 +146,6 @@ For a detailed architecture breakdown, see [docs/ARCHITECTURE.md](docs/ARCHITECT
 | **Authentication** | Firebase Auth | Latest | User authentication & identity |
 | **Push Notifications** | Firebase Cloud Messaging | Latest | Remote push notifications |
 | **Local Storage** | Hive | 2.2+ | Lightweight local key-value store |
-| **Local Database** | Drift (SQLite) | 2.15+ | Structured local data persistence |
-| **HTTP Client** | Dio | 5.4+ | HTTP networking with interceptors |
-| **Routing** | GoRouter | 13.0+ | Declarative routing |
-| **Code Generation** | Freezed + json_serializable | Latest | Immutable models & JSON serialization |
 | **Dependency Injection** | Riverpod | 2.5+ | Compile-safe DI via providers |
 | **Background Tasks** | WorkManager (Android) | 2.9+ | Periodic background sync |
 | **Foreground Service** | flutter_foreground_task | 6.1+ | Persistent child monitoring service |
@@ -290,21 +286,7 @@ flutter pub get
 
 Follow the detailed [Firebase Setup Guide](#-firebase-setup) below.
 
-### 4. Generate Code (Freezed models, JSON serialization)
-
-```bash
-# In each package that uses code generation:
-cd packages/shared
-dart run build_runner build --delete-conflicting-outputs
-
-cd ../parent_app
-dart run build_runner build --delete-conflicting-outputs
-
-cd ../child_app
-dart run build_runner build --delete-conflicting-outputs
-```
-
-### 5. Build APKs
+### 4. Build APKs
 
 ```bash
 # Build Parent App (release)

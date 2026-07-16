@@ -1,7 +1,7 @@
 # Project State
 
 ## Current Version
-v0.3.0
+v0.4.0
 
 ## Completed Features
 - Shared package initialization (Models, Services, Utils, Theme, Constants)
@@ -10,6 +10,7 @@ v0.3.0
 - Parent App auth screens (Login, Register, Splash)
 - Parent App main screens (Dashboard, Pairing, QR Scan, Device List, Reports, Notifications, App Usage, Device Info, Study Analytics, Settings)
 - Parent App Android Manifest
+- Parent App report detail screen with real Firestore data binding
 - Child App foundation (pubspec, main.dart, app.dart, DI, routing, services, repositories)
 - Child App platform channel architecture (Dart ↔ Kotlin MethodChannel)
 - Child App WorkManager for periodic background sync
@@ -17,25 +18,24 @@ v0.3.0
 - Child App Kotlin MainActivity with UsageStats, DeviceInfo, BatteryOptimization, InstalledApps
 - Child App Kotlin Native Services (ForegroundMonitoringService, BootReceiver)
 - Child App full UI implementation (login, join family, home, permissions, settings screens)
+- Firebase Cloud Functions (usage notifications, distraction alerts, device registration alerts, scheduled daily reports)
+- Unit tests for shared utilities (StudyScoreCalculator, Validators, AppClassifier)
+- README accuracy cleanup (removed Drift, Dio, Freezed references)
 - Project hygiene (.gitignore, PROJECT_STATE, CHANGELOG)
 
 ## Features In Progress
 - None
 
 ## Remaining Features
-- Report detail real data binding
-- Unit and widget tests
-- End-to-end testing and deployment
-- Cloud Functions for server-side notifications
+- End-to-end testing on physical devices
+- Firebase project setup (generate google-services.json and firebase_options.dart via FlutterFire CLI)
 
 ## Known Bugs
 - None documented (pre-release phase)
 
 ## Technical Debt
 - Need to generate actual `firebase_options.dart` via FlutterFire CLI
-- README references Drift and Freezed but neither is actually used
-- Report detail screen in parent app shows placeholder data
-- Child app screens use minimal placeholder UI
+- Cloud Functions `generateScheduledReport` uses placeholder data (needs to aggregate from analytics subcollection in production)
 
 ## Current Architecture
 - Clean Architecture (Domain, Data, Presentation)
@@ -44,12 +44,10 @@ v0.3.0
 - GoRouter for Navigation
 - Monorepo style using a `shared` package
 - Platform Channels for Dart ↔ Kotlin communication
+- Firebase Cloud Functions for server-side logic
 
 ## Next Recommended Task
-- Implement Child App UI screens (splash, login, join family, home, permissions, settings)
-
-## Last Commit Hash
-(pending)
+- Set up Firebase project, generate google-services.json, and test on physical devices
 
 ## Last Updated Date
-2026-07-14
+2026-07-16

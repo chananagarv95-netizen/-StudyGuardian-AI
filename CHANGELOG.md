@@ -15,6 +15,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `parent_app` screens including Splash, Login, Register, Dashboard, Pairing, Device List, App Usage, Analytics, Reports, Notifications, and Settings.
 - Project state tracking and changelog setup.
 
+## [0.4.0] - 2026-07-16
+
+### Added
+- **Firebase Cloud Functions:**
+  - `onNewUsageData` — notifies parents when child usage data is synced.
+  - `onHighDistractionAlert` — alerts parents when distraction score exceeds 70.
+  - `onNewDeviceRegistered` — notifies parents when a new child device joins the family.
+  - `generateScheduledReport` — daily midnight cron job to generate reports per device.
+- **Unit Tests:**
+  - `study_score_calculator_test.dart` — 14 tests covering all calculator methods.
+  - `validators_test.dart` — 14 tests covering email, password, pairing code, and display name validation.
+  - `app_classifier_test.dart` — 11 tests covering known app lookup, keyword fallback, and category properties.
+- Added `dev_dependencies` (flutter_test, flutter_lints) to shared `pubspec.yaml`.
+
+### Fixed
+- **Report Detail Screen:** Replaced all hardcoded placeholder dashes with real Firestore data binding from `ReportModel.data` map. Now shows key metrics, score breakdown with progress bars, top apps, and AI summary.
+- **Firestore Bug:** Fixed `getReportsByDevice` and `getReportsByType` ordering by non-existent `createdAt` field — changed to `generatedAt` to match `ReportModel`.
+- **Firestore Bug:** Changed `ReportModel.fromJson()` to `ReportModel.fromFirestore()` in report query methods for proper Timestamp handling.
+
+### Changed
+- **README.md:** Removed inaccurate references to Drift (SQLite), Dio, and Freezed that were never used. Removed the "Generate Code" installation step referencing build_runner.
+
 ## [0.1.1] - 2026-07-13
 
 ### Fixed
