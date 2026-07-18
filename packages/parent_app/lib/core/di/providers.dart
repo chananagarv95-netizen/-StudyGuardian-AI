@@ -14,6 +14,8 @@ import 'package:shared/models/report_model.dart';
 import 'package:shared/models/notification_model.dart';
 import 'package:shared/models/family_model.dart';
 
+import '../services/security_service.dart';
+
 // ─── Service Providers ───────────────────────────────────────────────────────
 
 /// Provides the authentication service singleton.
@@ -28,6 +30,22 @@ final fcmServiceProvider = Provider<FCMService>((ref) => FCMService());
 
 /// Provides the Hive local storage service singleton.
 final hiveServiceProvider = Provider<HiveService>((ref) => HiveService());
+
+/// Provides the security service for PIN and biometric authentication.
+final securityServiceProvider = Provider<SecurityService>((ref) {
+  final hiveService = ref.watch(hiveServiceProvider);
+  return SecurityService(hiveService: hiveService);
+});
+
+/// Whether a parent PIN has been configured.
+final hasPinProvider = Provider<bool>((ref) {
+  return ref.watch(securityServiceProvider).hasPin;
+});
+
+/// Whether biometric authentication is enabled.
+final isBiometricEnabledProvider = Provider<bool>((ref) {
+  return ref.watch(securityServiceProvider).isBiometricEnabled;
+});
 
 // ─── Auth Providers ──────────────────────────────────────────────────────────
 

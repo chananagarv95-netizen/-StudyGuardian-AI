@@ -106,6 +106,60 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
 
+            // Security Section
+            Text(
+              'Security',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            GlassCard(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.pin_rounded, color: Color(0xFF6366F1)),
+                    title: Text(ref.watch(hasPinProvider) ? 'Change PIN' : 'Set Parent PIN'),
+                    subtitle: Text(
+                      ref.watch(hasPinProvider) ? 'PIN is active' : 'No PIN set',
+                      style: TextStyle(
+                        color: ref.watch(hasPinProvider)
+                            ? const Color(0xFF10B981)
+                            : Colors.white54,
+                      ),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push('/pin-setup'),
+                  ),
+                  const Divider(height: 1),
+                  SwitchListTile(
+                    secondary: const Icon(Icons.fingerprint, color: Color(0xFF14B8A6)),
+                    title: const Text('Biometric Unlock'),
+                    subtitle: const Text('Use fingerprint or face unlock'),
+                    value: ref.watch(isBiometricEnabledProvider),
+                    onChanged: (bool value) async {
+                      final securityService = ref.read(securityServiceProvider);
+                      if (value) {
+                        final available = await securityService.isBiometricAvailable();
+                        if (!available) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Biometric authentication not available on this device'),
+                                backgroundColor: Color(0xFFEF4444),
+                              ),
+                            );
+                          }
+                          return;
+                        }
+                      }
+                      await securityService.setBiometricEnabled(value);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
             // About Section
             Text(
               'About',
