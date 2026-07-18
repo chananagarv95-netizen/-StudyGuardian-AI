@@ -115,4 +115,134 @@ class SummaryGenerator {
 
     return buffer.toString().trim();
   }
+
+  /// Generates a focused study recommendation based on score ranges.
+  ///
+  /// Returns a paragraph with actionable advice tailored to the
+  /// student's current study, focus, and distraction scores.
+  static String generateStudyRecommendation(
+    int studyScore,
+    int focusScore,
+    int distractionScore,
+  ) {
+    final StringBuffer buffer = StringBuffer();
+
+    // Study score recommendation
+    if (studyScore >= 80) {
+      buffer.writeln(
+        '🌟 Excellent study habits! Keep maintaining this level of '
+        'dedication to educational content.',
+      );
+    } else if (studyScore >= 60) {
+      buffer.writeln(
+        '👍 Good study engagement. Try increasing educational app '
+        'usage by 15–20 minutes daily for even better results.',
+      );
+    } else if (studyScore >= 40) {
+      buffer.writeln(
+        '📚 Moderate study time. Consider setting a daily study goal '
+        'of at least 1 hour on educational apps.',
+      );
+    } else {
+      buffer.writeln(
+        '⚠️ Low study engagement today. Encourage using educational '
+        'apps like Khan Academy, Duolingo, or study tools.',
+      );
+    }
+
+    // Focus recommendation
+    if (focusScore < 50) {
+      buffer.writeln(
+        '🎯 Focus is low — frequent app switching detected. '
+        'Try enabling "Do Not Disturb" during study sessions.',
+      );
+    } else if (focusScore >= 80) {
+      buffer.writeln(
+        '🎯 Great focus! Minimal app switching and low social media '
+        'usage during study time.',
+      );
+    }
+
+    // Distraction recommendation
+    if (distractionScore >= 70) {
+      buffer.writeln(
+        '📱 High distraction level. Entertainment and social media '
+        'are consuming a large portion of screen time. Consider '
+        'setting time limits.',
+      );
+    } else if (distractionScore >= 40) {
+      buffer.writeln(
+        '📱 Moderate distractions. A healthy balance, but reducing '
+        'entertainment time by 15 minutes could improve productivity.',
+      );
+    }
+
+    return buffer.toString().trim();
+  }
+
+  /// Generates a weekly insight summary from a list of daily analytics.
+  ///
+  /// Analyzes trends across the week and provides a high-level overview.
+  static String generateWeeklyInsight(
+    List<StudyAnalyticsModel> weekHistory,
+  ) {
+    if (weekHistory.isEmpty) {
+      return 'No analytics data available for this week.';
+    }
+
+    final StringBuffer buffer = StringBuffer();
+
+    // Average scores
+    final avgStudy = weekHistory
+        .map((a) => a.studyScore)
+        .reduce((a, b) => a + b) ~/ weekHistory.length;
+    final avgFocus = weekHistory
+        .map((a) => a.focusScore)
+        .reduce((a, b) => a + b) ~/ weekHistory.length;
+    final avgDistraction = weekHistory
+        .map((a) => a.distractionScore)
+        .reduce((a, b) => a + b) ~/ weekHistory.length;
+
+    buffer.writeln(
+      'Weekly averages: Study $avgStudy/100, '
+      'Focus $avgFocus/100, Distraction $avgDistraction/100.',
+    );
+
+    // Trend detection
+    if (weekHistory.length >= 3) {
+      final firstHalf = weekHistory.sublist(0, weekHistory.length ~/ 2);
+      final secondHalf = weekHistory.sublist(weekHistory.length ~/ 2);
+
+      final firstAvg = firstHalf
+          .map((a) => a.studyScore)
+          .reduce((a, b) => a + b) ~/ firstHalf.length;
+      final secondAvg = secondHalf
+          .map((a) => a.studyScore)
+          .reduce((a, b) => a + b) ~/ secondHalf.length;
+
+      if (secondAvg > firstAvg + 5) {
+        buffer.writeln('📈 Study performance is improving over the week!');
+      } else if (secondAvg < firstAvg - 5) {
+        buffer.writeln('📉 Study performance has declined. Consider a check-in.');
+      } else {
+        buffer.writeln('➡️ Study performance has been consistent this week.');
+      }
+    }
+
+    // Best day
+    final bestDay = weekHistory.reduce(
+        (a, b) => a.studyScore > b.studyScore ? a : b);
+    buffer.writeln('Best study day: ${bestDay.date} (score: ${bestDay.studyScore}).');
+
+    // Total screen time
+    final totalScreenTime = weekHistory
+        .map((a) => a.totalScreenTime)
+        .reduce((a, b) => a + b);
+    final avgDailyScreen = totalScreenTime ~/ weekHistory.length;
+    buffer.writeln(
+      'Average daily screen time: ${DurationUtils.formatMinutes(avgDailyScreen)}.',
+    );
+
+    return buffer.toString().trim();
+  }
 }

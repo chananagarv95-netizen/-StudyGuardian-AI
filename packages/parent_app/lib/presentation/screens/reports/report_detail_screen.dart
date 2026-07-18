@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared/models/report_model.dart';
 import '../../../core/di/providers.dart';
+import '../../../core/services/report_export_service.dart';
 import '../../widgets/glass_card.dart';
 
 /// Report detail screen showing full report data pulled from Firestore.
@@ -18,12 +19,22 @@ class ReportDetailScreen extends ConsumerWidget {
         title: const Text('Report Details'),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Share coming soon')),
-              );
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.ios_share),
+            itemBuilder: (_) => [
+              const PopupMenuItem(value: 'pdf', child: Text('Export as PDF')),
+              const PopupMenuItem(value: 'csv', child: Text('Export as CSV')),
+            ],
+            onSelected: (value) {
+              final report = reportsAsync.valueOrNull
+                  ?.where((r) => r.id == reportId)
+                  .firstOrNull;
+              if (report == null) return;
+              if (value == 'pdf') {
+                ReportExportService.exportAndSharePdf(report);
+              } else if (value == 'csv') {
+                ReportExportService.exportAndShareCsv(report);
+              }
             },
           ),
         ],

@@ -9,10 +9,17 @@ import 'package:shared/models/device_status_model.dart';
 
 /// Implementation of [SyncRepository] using Hive for offline queuing
 /// and Firestore for remote persistence.
+///
+/// Includes battery-saving optimizations:
+/// - **Change detection**: Skips syncing device status when it hasn't changed.
+/// - **Idle skip**: Skips full sync when the screen is off and battery is low.
 class SyncRepositoryImpl implements SyncRepository {
   final HiveService _hiveService;
   final FirestoreService _firestoreService;
   final PlatformChannelService _platformService;
+
+  /// Hash of the last synced device status to detect changes.
+  String? _lastStatusHash;
 
   SyncRepositoryImpl({
     required HiveService hiveService,
@@ -22,14 +29,48 @@ class SyncRepositoryImpl implements SyncRepository {
         _firestoreService = firestoreService,
         _platformService = platformService;
 
+  /// Returns `true` if the sync should be skipped to save battery.
+  Future<bool> _shouldSkipSync() async {
+    try {
+      final status = await _platformService.getDeviceStatus();
+      final screenOn = status['screenOn'] as bool? ?? true;
+      final battery = (status['battery'] as num?)?.toInt() ?? 100;
+
+      // Skip sync if screen is off AND battery is below 15%
+      if (!screenOn && battery < 15) {
+        AppLogger.d('SyncRepo', 'Skipping sync — screen off, battery $battery%');
+        return true;
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Creates a simple hash of device status to detect changes.
+  String _statusHash(Map<String, dynamic> statusMap) {
+    final key = '${statusMap['battery']}_'
+        '${statusMap['isCharging']}_'
+        '${statusMap['foregroundApp']}_'
+        '${statusMap['wifiConnected']}_'
+        '${statusMap['screenOn']}';
+    return key;
+  }
+
   @override
   Future<void> runFullSync(String deviceId) async {
     try {
+      // Battery optimization: skip if idle and battery low
+      if (await _shouldSkipSync()) return;
+
       AppLogger.i('SyncRepo', 'Starting full sync for device $deviceId');
 
-      // 1. Collect and sync device status
+      // 1. Collect and sync device status (with change detection)
       final statusMap = await _platformService.getDeviceStatus();
       if (statusMap.isNotEmpty) {
+        final currentHash = _statusHash(statusMap);
+        final statusChanged = currentHash != _lastStatusHash;
+
         final status = DeviceStatusModel(
           deviceId: deviceId,
           battery: (statusMap['battery'] as num?)?.toInt() ?? 0,
@@ -49,7 +90,13 @@ class SyncRepositoryImpl implements SyncRepository {
           signalStrength: (statusMap['signalStrength'] as num?)?.toInt() ?? 0,
           updatedAt: DateTime.now(),
         );
-        await _firestoreService.updateDeviceStatus(status);
+
+        if (statusChanged) {
+          await _firestoreService.updateDeviceStatus(status);
+          _lastStatusHash = currentHash;
+        } else {
+          AppLogger.d('SyncRepo', 'Device status unchanged, skipping upload');
+        }
       }
 
       // 2. Collect and sync today's usage

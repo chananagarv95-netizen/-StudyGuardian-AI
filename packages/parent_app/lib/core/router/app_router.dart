@@ -18,6 +18,10 @@ import '../../presentation/screens/reports/reports_screen.dart';
 import '../../presentation/screens/reports/report_detail_screen.dart';
 import '../../presentation/screens/notifications/notifications_screen.dart';
 import '../../presentation/screens/settings/settings_screen.dart';
+import '../../presentation/screens/security/pin_setup_screen.dart';
+import '../../presentation/screens/security/auth_gate_screen.dart';
+import '../../presentation/screens/study_coach/study_coach_screen.dart';
+import '../../presentation/screens/app_usage/category_usage_screen.dart';
 import '../di/providers.dart';
 
 /// Navigation shell key for bottom navigation persistence.
@@ -103,6 +107,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => ReportDetailScreen(
           reportId: state.pathParameters['id']!,
         ),
+      ),
+      GoRoute(
+        path: '/pin-setup',
+        builder: (context, state) => const PinSetupScreen(),
+      ),
+      GoRoute(
+        path: '/auth-gate',
+        builder: (context, state) => const AuthGateScreen(),
+      ),
+      GoRoute(
+        path: '/study-coach',
+        builder: (context, state) => const StudyCoachScreen(),
+      ),
+      GoRoute(
+        path: '/category-usage',
+        builder: (context, state) => const CategoryUsageScreen(),
       ),
 
       // Shell route for bottom navigation

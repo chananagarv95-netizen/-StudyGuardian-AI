@@ -380,10 +380,8 @@ class DashboardScreen extends ConsumerWidget {
           ref.invalidate(dailyUsageProvider(today));
         }),
         _actionButton(context, Icons.assessment, 'Reports', () => context.go('/reports')),
-        _actionButton(context, Icons.info_outline, 'Device', () {
-          final id = ref.read(activeDeviceProvider);
-          if (id != null) context.push('/device-info/$id');
-        }),
+        _actionButton(context, Icons.auto_awesome, 'Coach', () => context.push('/study-coach')),
+        _actionButton(context, Icons.category_outlined, 'Categories', () => context.push('/category-usage')),
         _actionButton(context, Icons.notifications_outlined, 'Alerts', () => context.push('/notifications')),
       ],
     );
