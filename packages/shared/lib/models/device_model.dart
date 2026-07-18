@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared/models/performance_mode.dart';
 
 /// Represents a physical device registered in the StudyGuardian AI system.
 ///
@@ -45,6 +46,13 @@ class DeviceModel {
   /// Timestamp when this device was first registered.
   final DateTime createdAt;
 
+  /// The current performance mode controlling sync frequency.
+  final PerformanceMode performanceMode;
+
+  /// When live mode will automatically expire. Only set when
+  /// [performanceMode] is [PerformanceMode.live].
+  final DateTime? liveModeExpiresAt;
+
   const DeviceModel({
     required this.id,
     required this.userId,
@@ -59,6 +67,8 @@ class DeviceModel {
     this.isOnline = false,
     this.fcmToken,
     required this.createdAt,
+    this.performanceMode = PerformanceMode.balanced,
+    this.liveModeExpiresAt,
   });
 
   /// Whether this device has the parent role.
@@ -87,6 +97,10 @@ class DeviceModel {
       fcmToken: data['fcmToken'] as String?,
       createdAt:
           (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      performanceMode: PerformanceMode.fromString(
+          data['performanceMode'] as String?),
+      liveModeExpiresAt:
+          (data['liveModeExpiresAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -105,6 +119,10 @@ class DeviceModel {
       'isOnline': isOnline,
       'fcmToken': fcmToken,
       'createdAt': Timestamp.fromDate(createdAt),
+      'performanceMode': performanceMode.name,
+      'liveModeExpiresAt': liveModeExpiresAt != null
+          ? Timestamp.fromDate(liveModeExpiresAt!)
+          : null,
     };
   }
 
@@ -128,6 +146,11 @@ class DeviceModel {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : DateTime.now(),
+      performanceMode: PerformanceMode.fromString(
+          json['performanceMode'] as String?),
+      liveModeExpiresAt: json['liveModeExpiresAt'] != null
+          ? DateTime.parse(json['liveModeExpiresAt'] as String)
+          : null,
     );
   }
 
@@ -147,6 +170,8 @@ class DeviceModel {
       'isOnline': isOnline,
       'fcmToken': fcmToken,
       'createdAt': createdAt.toIso8601String(),
+      'performanceMode': performanceMode.name,
+      'liveModeExpiresAt': liveModeExpiresAt?.toIso8601String(),
     };
   }
 
@@ -165,6 +190,8 @@ class DeviceModel {
     bool? isOnline,
     String? fcmToken,
     DateTime? createdAt,
+    PerformanceMode? performanceMode,
+    DateTime? liveModeExpiresAt,
   }) {
     return DeviceModel(
       id: id ?? this.id,
@@ -180,6 +207,8 @@ class DeviceModel {
       isOnline: isOnline ?? this.isOnline,
       fcmToken: fcmToken ?? this.fcmToken,
       createdAt: createdAt ?? this.createdAt,
+      performanceMode: performanceMode ?? this.performanceMode,
+      liveModeExpiresAt: liveModeExpiresAt ?? this.liveModeExpiresAt,
     );
   }
 

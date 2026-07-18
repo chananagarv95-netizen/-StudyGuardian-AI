@@ -1,10 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// The role of a parent within a family.
+///
+/// [primary] has full administrative control.
+/// [secondary] can view data, receive notifications, and send reminders
+/// but cannot modify critical settings or remove the primary parent.
+enum ParentRole {
+  primary,
+  secondary;
+
+  /// Human-readable display name.
+  String get displayName {
+    switch (this) {
+      case ParentRole.primary:
+        return 'Primary Parent';
+      case ParentRole.secondary:
+        return 'Secondary Parent';
+    }
+  }
+
+  /// Parses a [String] into a [ParentRole].
+  /// Returns [ParentRole.secondary] if the value is unrecognized.
+  static ParentRole fromString(String? value) {
+    if (value == 'primary') return ParentRole.primary;
+    return ParentRole.secondary;
+  }
+}
+
 /// Represents a user in the StudyGuardian AI system.
 ///
 /// A user can be either a parent (monitor) or a child (monitored device user).
-/// Each user is associated with a Firebase Authentication account and may have
-/// multiple FCM tokens for push notifications across devices.
+/// Parent users additionally have a [parentRole] indicating whether they are
+/// the primary (admin) or secondary parent in their family.
 class UserModel {
   /// Unique identifier (matches Firebase Auth UID).
   final String id;
@@ -21,6 +48,10 @@ class UserModel {
   /// Role of the user: `'parent'` or `'child'`.
   final String role;
 
+  /// Parent-specific role: [ParentRole.primary] or [ParentRole.secondary].
+  /// Only meaningful when [role] is `'parent'`; `null` for child users.
+  final ParentRole? parentRole;
+
   /// Timestamp when the user account was created.
   final DateTime createdAt;
 
@@ -33,6 +64,7 @@ class UserModel {
     required this.displayName,
     this.photoUrl,
     required this.role,
+    this.parentRole,
     required this.createdAt,
     this.fcmTokens = const [],
   });
@@ -42,6 +74,12 @@ class UserModel {
 
   /// Whether this user has the child role.
   bool get isChild => role == 'child';
+
+  /// Whether this parent user is the primary (admin) parent.
+  bool get isPrimaryParent => isParent && parentRole == ParentRole.primary;
+
+  /// Whether this parent user is a secondary parent.
+  bool get isSecondaryParent => isParent && parentRole == ParentRole.secondary;
 
   /// Creates a [UserModel] from a Firestore [DocumentSnapshot].
   ///
@@ -55,6 +93,9 @@ class UserModel {
       displayName: data['displayName'] as String? ?? '',
       photoUrl: data['photoUrl'] as String?,
       role: data['role'] as String? ?? 'child',
+      parentRole: data['parentRole'] != null
+          ? ParentRole.fromString(data['parentRole'] as String?)
+          : null,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       fcmTokens: List<String>.from(data['fcmTokens'] as List? ?? []),
     );
@@ -69,6 +110,7 @@ class UserModel {
       'displayName': displayName,
       'photoUrl': photoUrl,
       'role': role,
+      'parentRole': parentRole?.name,
       'createdAt': Timestamp.fromDate(createdAt),
       'fcmTokens': fcmTokens,
     };
@@ -84,6 +126,9 @@ class UserModel {
       displayName: json['displayName'] as String? ?? '',
       photoUrl: json['photoUrl'] as String?,
       role: json['role'] as String? ?? 'child',
+      parentRole: json['parentRole'] != null
+          ? ParentRole.fromString(json['parentRole'] as String?)
+          : null,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : DateTime.now(),
@@ -101,6 +146,7 @@ class UserModel {
       'displayName': displayName,
       'photoUrl': photoUrl,
       'role': role,
+      'parentRole': parentRole?.name,
       'createdAt': createdAt.toIso8601String(),
       'fcmTokens': fcmTokens,
     };
@@ -113,6 +159,7 @@ class UserModel {
     String? displayName,
     String? photoUrl,
     String? role,
+    ParentRole? parentRole,
     DateTime? createdAt,
     List<String>? fcmTokens,
   }) {
@@ -122,6 +169,7 @@ class UserModel {
       displayName: displayName ?? this.displayName,
       photoUrl: photoUrl ?? this.photoUrl,
       role: role ?? this.role,
+      parentRole: parentRole ?? this.parentRole,
       createdAt: createdAt ?? this.createdAt,
       fcmTokens: fcmTokens ?? this.fcmTokens,
     );

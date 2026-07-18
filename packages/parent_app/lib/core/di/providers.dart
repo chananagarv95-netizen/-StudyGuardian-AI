@@ -55,6 +55,14 @@ final selectedDeviceIdProvider = StateProvider<String?>((ref) => null);
 /// Theme mode for the app (defaults to dark).
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.dark);
 
+/// The current parent's role within their family.
+/// Returns null if the user is not loaded or is not a parent.
+final currentParentRoleProvider = Provider<ParentRole?>((ref) {
+  final user = ref.watch(currentUserProvider).valueOrNull;
+  if (user == null || !user.isParent) return null;
+  return user.parentRole;
+});
+
 // ─── Family & Device Providers ───────────────────────────────────────────────
 
 /// Fetches the current user's family.

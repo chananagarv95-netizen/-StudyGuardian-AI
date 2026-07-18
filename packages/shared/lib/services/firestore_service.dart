@@ -638,4 +638,93 @@ class FirestoreService {
           stackTrace: stackTrace);
     });
   }
+
+  // ===========================================================================
+  // Role Management
+  // ===========================================================================
+
+  /// Updates the parent role for a user.
+  Future<void> updateParentRole(String userId, String parentRoleName) async {
+    try {
+      await _db.collection('users').doc(userId).update({
+        'parentRole': parentRoleName,
+      });
+      AppLogger.info('Updated parent role for $userId to $parentRoleName');
+    } catch (e, stackTrace) {
+      AppLogger.error(
+          'Failed to update parent role for $userId',
+          error: e,
+          stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
+  /// Removes a secondary parent from a family.
+  /// Only removes from the parentIds array — does not delete the user account.
+  Future<void> removeSecondaryParent(
+      String familyId, String parentId) async {
+    try {
+      await _db.collection('families').doc(familyId).update({
+        'parentIds': FieldValue.arrayRemove([parentId]),
+      });
+      AppLogger.info('Removed secondary parent $parentId from family $familyId');
+    } catch (e, stackTrace) {
+      AppLogger.error(
+          'Failed to remove parent $parentId from family $familyId',
+          error: e,
+          stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
+  // ===========================================================================
+  // Performance Mode
+  // ===========================================================================
+
+  /// Updates the performance mode for a device.
+  Future<void> updatePerformanceMode(
+    String deviceId,
+    String modeName, {
+    DateTime? liveModeExpiresAt,
+  }) async {
+    try {
+      final Map<String, dynamic> data = {
+        'performanceMode': modeName,
+      };
+      if (liveModeExpiresAt != null) {
+        data['liveModeExpiresAt'] =
+            Timestamp.fromDate(liveModeExpiresAt);
+      } else {
+        data['liveModeExpiresAt'] = null;
+      }
+      await _db.collection('devices').doc(deviceId).update(data);
+      AppLogger.info(
+          'Updated performance mode for device $deviceId to $modeName');
+    } catch (e, stackTrace) {
+      AppLogger.error(
+          'Failed to update performance mode for device $deviceId',
+          error: e,
+          stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
+  // ===========================================================================
+  // Single Report Fetch
+  // ===========================================================================
+
+  /// Fetches a single report by its [reportId].
+  Future<ReportModel?> getReport(String reportId) async {
+    try {
+      final doc = await _db.collection('reports').doc(reportId).get();
+      if (!doc.exists) return null;
+      return ReportModel.fromFirestore(doc);
+    } catch (e, stackTrace) {
+      AppLogger.error(
+          'Failed to get report $reportId',
+          error: e,
+          stackTrace: stackTrace);
+      rethrow;
+    }
+  }
 }

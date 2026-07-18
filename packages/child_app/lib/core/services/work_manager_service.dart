@@ -1,6 +1,7 @@
 import 'package:workmanager/workmanager.dart';
 import 'package:shared/services/firestore_service.dart';
 import 'package:shared/services/hive_service.dart';
+import 'package:shared/models/performance_mode.dart';
 import 'package:shared/utils/logger.dart';
 
 /// WorkManager service for scheduling and handling periodic background sync.
@@ -19,26 +20,45 @@ class WorkManagerService {
 
   /// Registers the periodic background sync task.
   ///
-  /// Runs every 15 minutes. Android may batch or delay execution
-  /// depending on Doze mode and battery optimization settings.
-  static Future<void> registerPeriodicSync() async {
+  /// The [mode] controls how frequently syncs occur:
+  /// - [PerformanceMode.eco]: every 60 minutes
+  /// - [PerformanceMode.balanced]: every 15 minutes (default)
+  /// - [PerformanceMode.live]: every 3 minutes
+  ///
+  /// Android may batch or delay execution depending on Doze mode
+  /// and battery optimization settings.
+  static Future<void> registerPeriodicSync({
+    PerformanceMode mode = PerformanceMode.balanced,
+  }) async {
     try {
       await Workmanager().registerPeriodicTask(
         syncTaskName,
         syncTaskName,
-        frequency: const Duration(minutes: 15),
+        frequency: mode.syncInterval,
         constraints: Constraints(
           networkType: NetworkType.connected,
         ),
-        existingWorkPolicy: ExistingWorkPolicy.keep,
+        existingWorkPolicy: ExistingWorkPolicy.replace,
         backoffPolicy: BackoffPolicy.exponential,
         backoffPolicyDelay: const Duration(minutes: 1),
         tag: 'studyguardian_sync',
       );
-      AppLogger.i(_tag, 'Periodic sync registered (every 15 min)');
+      AppLogger.i(
+        _tag,
+        'Periodic sync registered (${mode.displayName}, '
+            'every ${mode.syncInterval.inMinutes} min)',
+      );
     } catch (e, st) {
       AppLogger.e(_tag, 'Failed to register periodic sync', e, st);
     }
+  }
+
+  /// Switches the sync frequency by cancelling the current periodic task
+  /// and re-registering with the new [mode]'s interval.
+  static Future<void> switchMode(PerformanceMode mode) async {
+    AppLogger.i(_tag, 'Switching to ${mode.displayName}');
+    await cancelAllSync();
+    await registerPeriodicSync(mode: mode);
   }
 
   /// Triggers an immediate one-time sync.

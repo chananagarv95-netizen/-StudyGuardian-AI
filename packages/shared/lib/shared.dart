@@ -22,6 +22,7 @@ export 'models/study_analytics_model.dart';
 export 'models/report_model.dart';
 export 'models/notification_model.dart';
 export 'models/family_model.dart';
+export 'models/performance_mode.dart';
 
 // ---------------------------------------------------------------------------
 // Services
@@ -44,6 +45,7 @@ export 'utils/study_score_calculator.dart';
 export 'utils/summary_generator.dart';
 export 'utils/logger.dart';
 export 'utils/validators.dart';
+export 'utils/parent_role_helper.dart';
 
 // ---------------------------------------------------------------------------
 // Constants

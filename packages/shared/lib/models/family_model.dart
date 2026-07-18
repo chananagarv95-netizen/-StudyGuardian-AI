@@ -24,6 +24,11 @@ class FamilyModel {
   /// List of user IDs for children in this family.
   final List<String> childIds;
 
+  /// The user ID of the primary parent (family administrator).
+  /// The primary parent has full control over settings and can manage
+  /// secondary parents.
+  final String primaryParentId;
+
   const FamilyModel({
     required this.id,
     required this.name,
@@ -31,6 +36,7 @@ class FamilyModel {
     required this.createdAt,
     this.parentIds = const [],
     this.childIds = const [],
+    required this.primaryParentId,
   });
 
   /// Total number of members (parents + children) in the family.
@@ -49,6 +55,9 @@ class FamilyModel {
   bool isMember(String userId) =>
       parentIds.contains(userId) || childIds.contains(userId);
 
+  /// Whether the given user ID is the primary parent.
+  bool isPrimaryParent(String userId) => userId == primaryParentId;
+
   /// Creates a [FamilyModel] from a Firestore [DocumentSnapshot].
   factory FamilyModel.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -61,6 +70,7 @@ class FamilyModel {
           (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       parentIds: List<String>.from(data['parentIds'] as List? ?? []),
       childIds: List<String>.from(data['childIds'] as List? ?? []),
+      primaryParentId: data['primaryParentId'] as String? ?? '',
     );
   }
 
@@ -72,6 +82,7 @@ class FamilyModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'parentIds': parentIds,
       'childIds': childIds,
+      'primaryParentId': primaryParentId,
     };
   }
 
@@ -86,6 +97,7 @@ class FamilyModel {
           : DateTime.now(),
       parentIds: List<String>.from(json['parentIds'] as List? ?? []),
       childIds: List<String>.from(json['childIds'] as List? ?? []),
+      primaryParentId: json['primaryParentId'] as String? ?? '',
     );
   }
 
@@ -98,6 +110,7 @@ class FamilyModel {
       'createdAt': createdAt.toIso8601String(),
       'parentIds': parentIds,
       'childIds': childIds,
+      'primaryParentId': primaryParentId,
     };
   }
 
@@ -109,6 +122,7 @@ class FamilyModel {
     DateTime? createdAt,
     List<String>? parentIds,
     List<String>? childIds,
+    String? primaryParentId,
   }) {
     return FamilyModel(
       id: id ?? this.id,
@@ -117,6 +131,7 @@ class FamilyModel {
       createdAt: createdAt ?? this.createdAt,
       parentIds: parentIds ?? this.parentIds,
       childIds: childIds ?? this.childIds,
+      primaryParentId: primaryParentId ?? this.primaryParentId,
     );
   }
 
