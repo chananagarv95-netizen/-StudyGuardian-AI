@@ -39,19 +39,20 @@ class FirebaseService {
   /// logging the error.
   Future<void> initialize() async {
     if (_initialized) {
-      AppLogger.info('Firebase already initialized, skipping.');
+      AppLogger.i('FirebaseService', 'Firebase already initialized, skipping.');
       return;
     }
 
     try {
       await Firebase.initializeApp();
       _initialized = true;
-      AppLogger.info('Firebase initialized successfully.');
+      AppLogger.i('FirebaseService', 'Firebase initialized successfully.');
     } catch (e, stackTrace) {
-      AppLogger.error(
+      AppLogger.e(
+        'FirebaseService',
         'Failed to initialize Firebase',
-        error: e,
-        stackTrace: stackTrace,
+        e,
+        stackTrace,
       );
       rethrow;
     }

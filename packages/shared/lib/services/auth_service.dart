@@ -36,7 +36,7 @@ class AuthService {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
-        AppLogger.info('Google sign-in cancelled by user.');
+        AppLogger.i('Service', 'Google sign-in cancelled by user.');
         return null;
       }
 
@@ -51,17 +51,11 @@ class AuthService {
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
-      AppLogger.info(
-        'Google sign-in successful for user: ${userCredential.user?.uid}',
-      );
+      AppLogger.i('Service', 'Google sign-in successful for user: ${userCredential.user?.uid}');
 
       return userCredential;
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Google sign-in failed',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Google sign-in failed', e, stackTrace);
       rethrow;
     }
   }
@@ -82,17 +76,11 @@ class AuthService {
         password: password,
       );
 
-      AppLogger.info(
-        'Email sign-in successful for user: ${credential.user?.uid}',
-      );
+      AppLogger.i('Service', 'Email sign-in successful for user: ${credential.user?.uid}');
 
       return credential;
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Email sign-in failed for $email',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Email sign-in failed for $email', e, stackTrace);
       rethrow;
     }
   }
@@ -118,18 +106,15 @@ class AuthService {
       // Reload user data so subsequent reads reflect the new display name.
       await credential.user?.reload();
 
-      AppLogger.info(
+      AppLogger.i(
+        'AuthService',
         'Email sign-up successful for user: ${credential.user?.uid} '
         '(displayName: $displayName)',
       );
 
       return credential;
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Email sign-up failed for $email',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Email sign-up failed for $email', e, stackTrace);
       rethrow;
     }
   }
@@ -146,9 +131,9 @@ class AuthService {
       // Sign out from Firebase Auth.
       await _auth.signOut();
 
-      AppLogger.info('User signed out successfully.');
+      AppLogger.i('Service', 'User signed out successfully.');
     } catch (e, stackTrace) {
-      AppLogger.error('Sign-out failed', error: e, stackTrace: stackTrace);
+      AppLogger.e('Service', 'Sign-out failed', e, stackTrace);
       rethrow;
     }
   }
@@ -176,13 +161,9 @@ class AuthService {
   Future<void> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
-      AppLogger.info('Password reset email sent to $email.');
+      AppLogger.i('Service', 'Password reset email sent to $email.');
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Password reset failed for $email',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Password reset failed for $email', e, stackTrace);
       rethrow;
     }
   }

@@ -41,19 +41,13 @@ class FCMService {
         sound: true,
       );
 
-      AppLogger.info(
-        'FCM permission status: ${settings.authorizationStatus}',
-      );
+      AppLogger.i('Service', 'FCM permission status: ${settings.authorizationStatus}');
 
       // Retrieve the current FCM token.
       final String? token = await _messaging.getToken();
-      AppLogger.info('FCM token retrieved: ${token != null ? '***' : 'null'}');
+      AppLogger.i('Service', 'FCM token retrieved: ${token != null ? '***' : 'null'}');
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to initialize FCM',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to initialize FCM', e, stackTrace);
       rethrow;
     }
   }
@@ -68,8 +62,7 @@ class FCMService {
       final token = await _messaging.getToken();
       return token;
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get FCM token',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('FCMService', 'Failed to get FCM token', e, stackTrace);
       rethrow;
     }
   }
@@ -104,15 +97,9 @@ class FCMService {
         'processed': false,
       });
 
-      AppLogger.info(
-        'Notification queued: "$title" → token ***${targetFcmToken.substring(targetFcmToken.length > 6 ? targetFcmToken.length - 6 : 0)}',
-      );
+      AppLogger.i('Service', 'Notification queued: "$title" → token ***${targetFcmToken.substring(targetFcmToken.length > 6 ? targetFcmToken.length - 6 : 0)}');
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to queue notification via Firestore',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to queue notification via Firestore', e, stackTrace);
       rethrow;
     }
   }
@@ -128,19 +115,12 @@ class FCMService {
       FirebaseMessaging.onMessage.listen(
         handler,
         onError: (Object error) {
-          AppLogger.error(
-            'Error in onMessage listener',
-            error: error,
-          );
+          AppLogger.e('FCMService', 'Error in onMessage listener', error);
         },
       );
-      AppLogger.info('FCM onMessage listener registered.');
+      AppLogger.i('Service', 'FCM onMessage listener registered.');
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to register onMessage listener',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to register onMessage listener', e, stackTrace);
       rethrow;
     }
   }
@@ -156,17 +136,14 @@ class FCMService {
   /// ```
   static Future<void> handleBackgroundMessage(RemoteMessage message) async {
     try {
-      AppLogger.info(
+      AppLogger.i(
+        'FCMService',
         'Background message received: ${message.messageId ?? 'no-id'} '
-        '— title: ${message.notification?.title ?? 'N/A'}',
+        '— title: ${message.notification?.title ?? "N/A"}',
       );
       // Add custom background processing logic here if needed.
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Error handling background message',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Error handling background message', e, stackTrace);
     }
   }
 }

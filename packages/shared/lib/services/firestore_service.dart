@@ -30,10 +30,10 @@ class FirestoreService {
   Future<void> createUser(UserModel user) async {
     try {
       await _db.collection('users').doc(user.id).set(user.toFirestore());
-      AppLogger.info('User created: ${user.id}');
+      AppLogger.i('Firestore', 'User created: ${user.id}');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to create user ${user.id}',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to create user ${user.id}',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -47,8 +47,8 @@ class FirestoreService {
       if (!doc.exists || doc.data() == null) return null;
       return UserModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get user $userId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get user $userId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -57,10 +57,10 @@ class FirestoreService {
   Future<void> updateUser(String userId, Map<String, dynamic> data) async {
     try {
       await _db.collection('users').doc(userId).update(data);
-      AppLogger.info('User updated: $userId');
+      AppLogger.i('Firestore', 'User updated: $userId');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to update user $userId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to update user $userId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -73,10 +73,10 @@ class FirestoreService {
   Future<void> createFamily(FamilyModel family) async {
     try {
       await _db.collection('families').doc(family.id).set(family.toFirestore());
-      AppLogger.info('Family created: ${family.id}');
+      AppLogger.i('Firestore', 'Family created: ${family.id}');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to create family ${family.id}',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to create family ${family.id}',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -90,8 +90,8 @@ class FirestoreService {
       if (!doc.exists || doc.data() == null) return null;
       return FamilyModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get family $familyId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get family $familyId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -110,8 +110,8 @@ class FirestoreService {
       if (query.docs.isEmpty) return null;
       return FamilyModel.fromJson(query.docs.first.data());
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get family by pairing code',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get family by pairing code',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -121,10 +121,10 @@ class FirestoreService {
       String familyId, Map<String, dynamic> data) async {
     try {
       await _db.collection('families').doc(familyId).update(data);
-      AppLogger.info('Family updated: $familyId');
+      AppLogger.i('Firestore', 'Family updated: $familyId');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to update family $familyId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to update family $familyId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -141,8 +141,8 @@ class FirestoreService {
           .map((doc) => FamilyModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get families for user $userId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get families for user $userId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -159,8 +159,8 @@ class FirestoreService {
           .map((doc) => FamilyModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get families for child $userId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get families for child $userId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -173,12 +173,9 @@ class FirestoreService {
       await _db.collection('families').doc(familyId).update({
         'parentIds': FieldValue.arrayUnion([parentId]),
       });
-      AppLogger.info('Parent $parentId added to family $familyId');
+      AppLogger.i('Firestore', 'Parent $parentId added to family $familyId');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to add parent $parentId to family $familyId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to add parent $parentId to family $familyId', e, stackTrace);
       rethrow;
     }
   }
@@ -191,12 +188,9 @@ class FirestoreService {
       await _db.collection('families').doc(familyId).update({
         'childIds': FieldValue.arrayUnion([childId]),
       });
-      AppLogger.info('Child $childId added to family $familyId');
+      AppLogger.i('Firestore', 'Child $childId added to family $familyId');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to add child $childId to family $familyId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to add child $childId to family $familyId', e, stackTrace);
       rethrow;
     }
   }
@@ -209,10 +203,10 @@ class FirestoreService {
   Future<void> createDevice(DeviceModel device) async {
     try {
       await _db.collection('devices').doc(device.id).set(device.toFirestore());
-      AppLogger.info('Device created: ${device.id}');
+      AppLogger.i('Firestore', 'Device created: ${device.id}');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to create device ${device.id}',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to create device ${device.id}',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -226,8 +220,8 @@ class FirestoreService {
       if (!doc.exists || doc.data() == null) return null;
       return DeviceModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get device $deviceId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get device $deviceId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -244,8 +238,8 @@ class FirestoreService {
           .map((doc) => DeviceModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get devices for family $familyId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get devices for family $familyId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -255,10 +249,10 @@ class FirestoreService {
       String deviceId, Map<String, dynamic> data) async {
     try {
       await _db.collection('devices').doc(deviceId).update(data);
-      AppLogger.info('Device updated: $deviceId');
+      AppLogger.i('Firestore', 'Device updated: $deviceId');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to update device $deviceId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to update device $deviceId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -270,12 +264,9 @@ class FirestoreService {
         'isOnline': isOnline,
         'lastSeen': FieldValue.serverTimestamp(),
       });
-      AppLogger.info('Device $deviceId online status updated to $isOnline');
+      AppLogger.i('Firestore', 'Device $deviceId online status updated to $isOnline');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to update online status for device $deviceId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to update online status for device $deviceId', e, stackTrace);
       rethrow;
     }
   }
@@ -292,12 +283,9 @@ class FirestoreService {
           .collection('device_status')
           .doc(status.deviceId)
           .set(status.toFirestore());
-      AppLogger.info('Device status updated for ${status.deviceId}');
+      AppLogger.i('Firestore', 'Device status updated for ${status.deviceId}');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to update device status for ${status.deviceId}',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to update device status for ${status.deviceId}', e, stackTrace);
       rethrow;
     }
   }
@@ -312,8 +300,8 @@ class FirestoreService {
       if (!doc.exists || doc.data() == null) return null;
       return DeviceStatusModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get device status for $deviceId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get device status for $deviceId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -330,8 +318,8 @@ class FirestoreService {
       if (!snapshot.exists || snapshot.data() == null) return null;
       return DeviceStatusModel.fromJson(snapshot.data()!);
     }).handleError((Object e, StackTrace stackTrace) {
-      AppLogger.error('Error streaming device status for $deviceId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Error streaming device status for $deviceId',
+          e, stackTrace);
     });
   }
 
@@ -344,10 +332,10 @@ class FirestoreService {
     try {
       final docId = '${usage.deviceId}_${usage.date}';
       await _db.collection('daily_usage').doc(docId).set(usage.toFirestore());
-      AppLogger.info('Daily usage saved: $docId');
+      AppLogger.i('Firestore', 'Daily usage saved: $docId');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to save daily usage',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to save daily usage',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -364,8 +352,8 @@ class FirestoreService {
       if (!doc.exists || doc.data() == null) return null;
       return DailyUsageModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get daily usage for $deviceId on $date',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get daily usage for $deviceId on $date',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -392,10 +380,7 @@ class FirestoreService {
           .map((doc) => DailyUsageModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to get usage for $deviceId ($startDate – $endDate)',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get usage for $deviceId ($startDate – $endDate)', e, stackTrace);
       rethrow;
     }
   }
@@ -412,10 +397,10 @@ class FirestoreService {
           .collection('study_analytics')
           .doc(docId)
           .set(analytics.toFirestore());
-      AppLogger.info('Study analytics saved: $docId');
+      AppLogger.i('Firestore', 'Study analytics saved: $docId');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to save study analytics',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to save study analytics',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -433,10 +418,7 @@ class FirestoreService {
       if (!doc.exists || doc.data() == null) return null;
       return StudyAnalyticsModel.fromJson(doc.data()!);
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to get study analytics for $deviceId on $date',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get study analytics for $deviceId on $date', e, stackTrace);
       rethrow;
     }
   }
@@ -463,10 +445,7 @@ class FirestoreService {
           .map((doc) => StudyAnalyticsModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to get analytics for $deviceId ($startDate – $endDate)',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get analytics for $deviceId ($startDate – $endDate)', e, stackTrace);
       rethrow;
     }
   }
@@ -479,10 +458,10 @@ class FirestoreService {
   Future<void> saveReport(ReportModel report) async {
     try {
       await _db.collection('reports').doc(report.id).set(report.toFirestore());
-      AppLogger.info('Report saved: ${report.id}');
+      AppLogger.i('Firestore', 'Report saved: ${report.id}');
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to save report ${report.id}',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to save report ${report.id}',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -501,8 +480,8 @@ class FirestoreService {
           .map((doc) => ReportModel.fromFirestore(doc))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error('Failed to get reports for device $deviceId',
-          error: e, stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get reports for device $deviceId',
+          e, stackTrace);
       rethrow;
     }
   }
@@ -523,10 +502,7 @@ class FirestoreService {
           .map((doc) => ReportModel.fromFirestore(doc))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to get reports for device $deviceId of type ${type.name}',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get reports for device $deviceId of type ${type.name}', e, stackTrace);
       rethrow;
     }
   }
@@ -542,12 +518,9 @@ class FirestoreService {
           .collection('notifications')
           .doc(notification.id)
           .set(notification.toFirestore());
-      AppLogger.info('Notification saved: ${notification.id}');
+      AppLogger.i('Firestore', 'Notification saved: ${notification.id}');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to save notification ${notification.id}',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to save notification ${notification.id}', e, stackTrace);
       rethrow;
     }
   }
@@ -570,10 +543,7 @@ class FirestoreService {
           .map((doc) => NotificationModel.fromJson(doc.data()))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to get notifications for family $familyId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get notifications for family $familyId', e, stackTrace);
       rethrow;
     }
   }
@@ -586,12 +556,9 @@ class FirestoreService {
       await _db.collection('notifications').doc(notificationId).update({
         'read': true,
       });
-      AppLogger.info('Notification marked as read: $notificationId');
+      AppLogger.i('Firestore', 'Notification marked as read: $notificationId');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to mark notification $notificationId as read',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to mark notification $notificationId as read', e, stackTrace);
       rethrow;
     }
   }
@@ -612,10 +579,7 @@ class FirestoreService {
 
       return query.count ?? 0;
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to get unread notification count for family $familyId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get unread notification count for family $familyId', e, stackTrace);
       rethrow;
     }
   }
@@ -632,10 +596,7 @@ class FirestoreService {
             .map((doc) => NotificationModel.fromJson(doc.data()))
             .toList())
         .handleError((Object e, StackTrace stackTrace) {
-      AppLogger.error(
-          'Error streaming notifications for family $familyId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Error streaming notifications for family $familyId', e, stackTrace);
     });
   }
 
@@ -649,12 +610,9 @@ class FirestoreService {
       await _db.collection('users').doc(userId).update({
         'parentRole': parentRoleName,
       });
-      AppLogger.info('Updated parent role for $userId to $parentRoleName');
+      AppLogger.i('Firestore', 'Updated parent role for $userId to $parentRoleName');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to update parent role for $userId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to update parent role for $userId', e, stackTrace);
       rethrow;
     }
   }
@@ -667,12 +625,9 @@ class FirestoreService {
       await _db.collection('families').doc(familyId).update({
         'parentIds': FieldValue.arrayRemove([parentId]),
       });
-      AppLogger.info('Removed secondary parent $parentId from family $familyId');
+      AppLogger.i('Firestore', 'Removed secondary parent $parentId from family $familyId');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to remove parent $parentId from family $familyId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to remove parent $parentId from family $familyId', e, stackTrace);
       rethrow;
     }
   }
@@ -698,13 +653,9 @@ class FirestoreService {
         data['liveModeExpiresAt'] = null;
       }
       await _db.collection('devices').doc(deviceId).update(data);
-      AppLogger.info(
-          'Updated performance mode for device $deviceId to $modeName');
+      AppLogger.i('Firestore', 'Updated performance mode for device $deviceId to $modeName');
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to update performance mode for device $deviceId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to update performance mode for device $deviceId', e, stackTrace);
       rethrow;
     }
   }
@@ -720,10 +671,7 @@ class FirestoreService {
       if (!doc.exists) return null;
       return ReportModel.fromFirestore(doc);
     } catch (e, stackTrace) {
-      AppLogger.error(
-          'Failed to get report $reportId',
-          error: e,
-          stackTrace: stackTrace);
+      AppLogger.e('Firestore', 'Failed to get report $reportId', e, stackTrace);
       rethrow;
     }
   }

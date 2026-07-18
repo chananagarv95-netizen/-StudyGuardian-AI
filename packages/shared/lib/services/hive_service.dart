@@ -38,15 +38,9 @@ class HiveService {
         Hive.openBox(_settingsBox),
       ]);
 
-      AppLogger.info(
-        'Hive initialized – boxes opened: $_cacheBox, $_syncBox, $_settingsBox',
-      );
+      AppLogger.i('Service', 'Hive initialized – boxes opened: $_cacheBox, $_syncBox, $_settingsBox');
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to initialize Hive',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to initialize Hive', e, stackTrace);
       rethrow;
     }
   }
@@ -61,11 +55,7 @@ class HiveService {
       final box = Hive.box(_cacheBox);
       await box.put(key, value);
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to save to cache (key: $key)',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to save to cache (key: $key)', e, stackTrace);
       rethrow;
     }
   }
@@ -76,11 +66,7 @@ class HiveService {
       final box = Hive.box(_cacheBox);
       return box.get(key);
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to get from cache (key: $key)',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to get from cache (key: $key)', e, stackTrace);
       rethrow;
     }
   }
@@ -96,13 +82,9 @@ class HiveService {
       final box = Hive.box(_syncBox);
       final key = DateTime.now().millisecondsSinceEpoch.toString();
       await box.put(key, data);
-      AppLogger.info('Pending sync item saved (key: $key)');
+      AppLogger.i('Service', 'Pending sync item saved (key: $key)');
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to save pending sync item',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to save pending sync item', e, stackTrace);
       rethrow;
     }
   }
@@ -117,11 +99,7 @@ class HiveService {
           .map((value) => Map<String, dynamic>.from(value as Map))
           .toList();
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to get pending syncs',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to get pending syncs', e, stackTrace);
       rethrow;
     }
   }
@@ -131,13 +109,9 @@ class HiveService {
     try {
       final box = Hive.box(_syncBox);
       await box.clear();
-      AppLogger.info('Pending sync queue cleared.');
+      AppLogger.i('Service', 'Pending sync queue cleared.');
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to clear pending syncs',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to clear pending syncs', e, stackTrace);
       rethrow;
     }
   }
@@ -152,11 +126,7 @@ class HiveService {
       final box = Hive.box(_settingsBox);
       await box.put(key, value);
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to save setting (key: $key)',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to save setting (key: $key)', e, stackTrace);
       rethrow;
     }
   }
@@ -167,11 +137,7 @@ class HiveService {
       final box = Hive.box(_settingsBox);
       return box.get(key, defaultValue: defaultValue);
     } catch (e, stackTrace) {
-      AppLogger.error(
-        'Failed to get setting (key: $key)',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      AppLogger.e('Service', 'Failed to get setting (key: $key)', e, stackTrace);
       rethrow;
     }
   }
