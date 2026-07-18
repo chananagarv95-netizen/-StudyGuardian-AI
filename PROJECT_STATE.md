@@ -1,7 +1,7 @@
 # Project State
 
 ## Current Version
-v0.4.0
+v0.5.0
 
 ## Completed Features
 - Shared package initialization (Models, Services, Utils, Theme, Constants)
@@ -22,6 +22,25 @@ v0.4.0
 - Unit tests for shared utilities (StudyScoreCalculator, Validators, AppClassifier)
 - README accuracy cleanup (removed Drift, Dio, Freezed references)
 - Project hygiene (.gitignore, PROJECT_STATE, CHANGELOG)
+
+### v0.5.0 Stabilization Phase
+- Parent Role System (ParentRole enum: primary/secondary, ParentRoleHelper permissions)
+- Primary Parent ID in FamilyModel
+- Performance Modes (PerformanceMode: eco/balanced/live with mode-aware WorkManager sync)
+- Parent Security (SecurityService with SHA-256 PIN hashing, biometric auth via local_auth)
+- Auth Gate and PIN Setup screens
+- Child App Restrictions (read-only settings, no sign-out, no manual sync)
+- Enhanced Child HomeScreen (battery, network, storage, sync mode stats)
+- Permission Revocation Handler (monitors revoked permissions, notifies parents)
+- AI Study Coach screen with recommendations and trend analysis
+- Smart App Categorization screen (category-grouped usage with expandable breakdown)
+- Enhanced SummaryGenerator (study recommendations, weekly insights, trend detection)
+- Report Export (PDF + CSV via share sheet with ReportExportService)
+- Battery Optimization (change detection, idle skip when screen off + battery low)
+- Dashboard improvements (Study Coach + Categories quick actions)
+- New Firestore methods (updateParentRole, removeSecondaryParent, updatePerformanceMode, getReport)
+- Android Manifest updates (USE_BIOMETRIC permission)
+- New dependencies (local_auth, crypto, pdf, path_provider)
 
 ## Features In Progress
 - None
@@ -45,9 +64,12 @@ v0.4.0
 - Monorepo style using a `shared` package
 - Platform Channels for Dart ↔ Kotlin communication
 - Firebase Cloud Functions for server-side logic
+- Parent Role System (Primary / Secondary access control)
+- Performance Mode System (Eco / Balanced / Live sync intervals)
+- Security Layer (PIN + Biometrics for parent app)
 
 ## Next Recommended Task
 - Set up Firebase project, generate google-services.json, and test on physical devices
 
 ## Last Updated Date
-2026-07-16
+2026-07-19

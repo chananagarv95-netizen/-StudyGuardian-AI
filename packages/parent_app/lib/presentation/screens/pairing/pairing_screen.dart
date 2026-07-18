@@ -45,6 +45,7 @@ class _PairingScreenState extends ConsumerState<PairingScreen> {
         createdAt: DateTime.now(),
         parentIds: [user.uid],
         childIds: [],
+        primaryParentId: user.uid,
       );
       await firestoreService.createFamily(family);
 

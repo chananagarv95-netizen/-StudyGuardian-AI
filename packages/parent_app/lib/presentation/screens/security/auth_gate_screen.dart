@@ -94,7 +94,7 @@ class _AuthGateScreenState extends ConsumerState<AuthGateScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -146,7 +146,11 @@ class _AuthGateScreenState extends ConsumerState<AuthGateScreen>
                 animation: _shakeAnimation,
                 builder: (context, child) {
                   return Transform.translate(
-                    offset: Offset(_shakeAnimation.value * ((_shakeController.value > 0.5) ? -1 : 1), 0),
+                    offset: Offset(
+                      _shakeAnimation.value *
+                          ((_shakeController.value > 0.5) ? -1 : 1),
+                      0,
+                    ),
                     child: child,
                   );
                 },

@@ -1,3 +1,4 @@
+import '../models/app_usage_model.dart';
 import '../models/daily_usage_model.dart';
 import '../models/study_analytics_model.dart';
 import 'duration_utils.dart';
@@ -79,7 +80,7 @@ class SummaryGenerator {
 
     // Top 3 apps by foreground time.
     if (usage.apps.isNotEmpty) {
-      final List<AppUsageEntry> sortedApps = List<AppUsageEntry>.from(usage.apps)
+      final List<AppUsageModel> sortedApps = List<AppUsageModel>.from(usage.apps)
         ..sort((a, b) => b.foregroundTime.compareTo(a.foregroundTime));
 
       final int topCount = sortedApps.length < 3 ? sortedApps.length : 3;
