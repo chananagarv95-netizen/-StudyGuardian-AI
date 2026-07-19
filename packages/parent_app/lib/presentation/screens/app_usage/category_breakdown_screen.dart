@@ -6,7 +6,6 @@ import '../../../core/di/providers.dart';
 import '../../widgets/app_usage_tile.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/empty_state.dart';
-import '../../widgets/charts/pie_chart_widget.dart';
 
 /// Category breakdown screen showing apps within a specific category.
 class CategoryBreakdownScreen extends ConsumerWidget {

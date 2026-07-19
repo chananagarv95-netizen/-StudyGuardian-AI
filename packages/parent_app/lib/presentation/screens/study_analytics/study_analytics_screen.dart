@@ -7,7 +7,6 @@ import '../../widgets/glass_card.dart';
 import '../../widgets/score_gauge.dart';
 import '../../widgets/section_header.dart';
 import '../../widgets/empty_state.dart';
-import '../../widgets/charts/score_comparison_chart.dart';
 
 /// Study analytics dashboard with scores and trend visualization.
 class StudyAnalyticsScreen extends ConsumerStatefulWidget {

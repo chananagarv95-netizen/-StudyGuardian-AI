@@ -2,8 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared/services/auth_service.dart';
-import 'package:shared/services/firestore_service.dart';
 import 'package:shared/models/user_model.dart';
 import 'package:shared/utils/validators.dart';
 import '../../../core/di/providers.dart';

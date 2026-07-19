@@ -1,5 +1,4 @@
 import 'package:workmanager/workmanager.dart';
-import 'package:shared/services/firestore_service.dart';
 import 'package:shared/services/hive_service.dart';
 import 'package:shared/models/performance_mode.dart';
 import 'package:shared/utils/logger.dart';
@@ -101,7 +100,6 @@ class WorkManagerService {
 
     try {
       final hiveService = HiveService();
-      final firestoreService = FirestoreService();
 
       // Retrieve pending sync items from Hive
       final pendingItems = hiveService.getPendingSyncs();

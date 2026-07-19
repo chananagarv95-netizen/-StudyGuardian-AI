@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shared/models/family_model.dart';
-import 'package:shared/services/firestore_service.dart';
 import '../../../core/di/providers.dart';
 
 /// Device pairing screen with QR code and manual code display.
@@ -19,7 +18,6 @@ class PairingScreen extends ConsumerStatefulWidget {
 
 class _PairingScreenState extends ConsumerState<PairingScreen> {
   String? _pairingCode;
-  String? _familyId;
   bool _isLoading = true;
   bool _copied = false;
 
@@ -51,7 +49,6 @@ class _PairingScreenState extends ConsumerState<PairingScreen> {
 
       setState(() {
         _pairingCode = code;
-        _familyId = familyId;
         _isLoading = false;
       });
     } catch (e) {

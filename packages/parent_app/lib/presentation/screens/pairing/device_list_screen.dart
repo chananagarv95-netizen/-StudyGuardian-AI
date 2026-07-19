@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/di/providers.dart';
 import '../../widgets/status_indicator.dart';
-import '../../widgets/battery_indicator.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/glass_card.dart';
 

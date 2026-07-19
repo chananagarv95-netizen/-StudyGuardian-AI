@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shared/models/app_category.dart';
-import 'package:shared/models/daily_usage_model.dart';
 import 'package:shared/models/app_usage_model.dart';
 import 'package:shared/utils/duration_utils.dart';
 
@@ -388,11 +387,10 @@ class CategoryUsageScreen extends ConsumerWidget {
 class _CategoryGroup {
   final AppCategory category;
   final List<AppUsageModel> apps;
-  int totalTime;
+  int totalTime = 0;
 
   _CategoryGroup({
     required this.category,
     List<AppUsageModel>? apps,
-    this.totalTime = 0,
   }) : apps = apps ?? [];
 }

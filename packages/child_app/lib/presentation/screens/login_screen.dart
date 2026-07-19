@@ -26,10 +26,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         firestoreService: firestoreService,
       );
 
-      final user = await authRepo.signInWithGoogle();
-      if (user != null) {
-        if (mounted) context.go('/join-family');
-      }
+      await authRepo.signInWithGoogle();
+      if (mounted) context.go('/join-family');
     } catch (e, st) {
       AppLogger.e('Login', 'Sign in failed', e, st);
       if (mounted) {

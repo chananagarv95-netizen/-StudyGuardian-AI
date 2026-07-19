@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:shared/utils/duration_utils.dart';
 import 'package:shared/models/app_usage_model.dart';
 import '../../../core/di/providers.dart';
-import '../../../core/utils/extensions.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/animated_stat_card.dart';
 import '../../widgets/status_indicator.dart';

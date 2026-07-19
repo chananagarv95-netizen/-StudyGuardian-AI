@@ -90,7 +90,7 @@ class ReportDetailScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: _scoreColor(studyScore.toInt()).withOpacity(0.15),
+                    color: _scoreColor(studyScore.toInt()).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(

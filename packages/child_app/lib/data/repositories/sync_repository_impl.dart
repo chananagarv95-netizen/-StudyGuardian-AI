@@ -4,7 +4,6 @@ import 'package:shared/utils/logger.dart';
 import '../../core/services/platform_channel_service.dart';
 import '../../domain/repositories/sync_repository.dart';
 import 'usage_repository_impl.dart';
-import 'device_repository_impl.dart';
 import 'package:shared/models/device_status_model.dart';
 
 /// Implementation of [SyncRepository] using Hive for offline queuing

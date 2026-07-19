@@ -16,12 +16,8 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
   Future<void> _checkPermissions() async {
     setState(() => _isLoading = true);
     try {
-      // Refresh permission states
-      await ref.refresh(usagePermissionProvider.future);
-      await ref.refresh(batteryOptimizationProvider.future);
-      
-      final hasUsage = ref.read(usagePermissionProvider).valueOrNull ?? false;
-      final hasBattery = ref.read(batteryOptimizationProvider).valueOrNull ?? false;
+      final hasUsage = await ref.refresh(usagePermissionProvider.future);
+      final hasBattery = await ref.refresh(batteryOptimizationProvider.future);
 
       if (hasUsage && hasBattery) {
         if (mounted) context.go('/');
@@ -108,7 +104,7 @@ class _PermissionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      color: isGranted ? Colors.green.withOpacity(0.1) : Colors.grey[900],
+      color: isGranted ? Colors.green.withValues(alpha: 0.1) : Colors.grey[900],
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(

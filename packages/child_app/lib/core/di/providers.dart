@@ -8,9 +8,6 @@ import 'package:shared/services/fcm_service.dart';
 import 'package:shared/services/hive_service.dart';
 import 'package:shared/models/user_model.dart';
 import 'package:shared/models/device_model.dart';
-import 'package:shared/models/device_status_model.dart';
-import 'package:shared/models/daily_usage_model.dart';
-import 'package:shared/models/study_analytics_model.dart';
 import 'package:shared/models/family_model.dart';
 import '../services/platform_channel_service.dart';
 
