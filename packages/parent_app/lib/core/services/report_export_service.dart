@@ -101,9 +101,7 @@ class ReportExportService {
         fileName: _buildFileName(report, 'pdf'),
       );
 
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(file.path)]),
-      );
+      await Share.shareXFiles([XFile(file.path)]);
 
       AppLogger.i(_tag, 'PDF shared successfully');
     } catch (e, stack) {
@@ -170,9 +168,7 @@ class ReportExportService {
         fileName: _buildFileName(report, 'csv'),
       );
 
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(file.path)]),
-      );
+      await Share.shareXFiles([XFile(file.path)]);
 
       AppLogger.i(_tag, 'CSV shared successfully');
     } catch (e, stack) {
@@ -315,8 +311,6 @@ class ReportExportService {
         fontSize: 11,
       ),
       headerDecoration: const pw.BoxDecoration(color: _slate800),
-      headerCellPadding:
-          const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       cellPadding:
           const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       cellStyle: const pw.TextStyle(fontSize: 10),
@@ -365,15 +359,18 @@ class ReportExportService {
                         borderRadius: pw.BorderRadius.circular(8),
                       ),
                     ),
-                    pw.FractionallySizedBox(
-                      widthFactor: fraction.clamp(0.0, 1.0),
-                      child: pw.Container(
-                        height: 16,
-                        decoration: pw.BoxDecoration(
-                          color: score.color,
-                          borderRadius: pw.BorderRadius.circular(8),
-                        ),
-                      ),
+                    pw.LayoutBuilder(
+                      builder: (context, constraints) {
+                        final maxWidth = constraints?.maxWidth ?? 100.0;
+                        return pw.Container(
+                          width: maxWidth * fraction.clamp(0.0, 1.0),
+                          height: 16,
+                          decoration: pw.BoxDecoration(
+                            color: score.color,
+                            borderRadius: pw.BorderRadius.circular(8),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -418,8 +415,6 @@ class ReportExportService {
         fontSize: 11,
       ),
       headerDecoration: const pw.BoxDecoration(color: _amber),
-      headerCellPadding:
-          const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       cellPadding:
           const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       cellStyle: const pw.TextStyle(fontSize: 10),
