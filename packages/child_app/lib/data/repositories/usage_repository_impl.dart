@@ -42,7 +42,8 @@ class UsageRepositoryImpl implements UsageRepository {
         return AppUsageModel(
           packageName: packageName,
           appName: entry['appName'] as String? ?? packageName,
-          category: AppClassifier.classify(packageName),
+          category: AppClassifier.classifyApp(
+              packageName, entry['appName'] as String? ?? packageName),
           foregroundTime: (entry['foregroundTime'] as num?)?.toInt() ?? 0,
           backgroundTime: (entry['backgroundTime'] as num?)?.toInt() ?? 0,
           openCount: (entry['openCount'] as num?)?.toInt() ?? 0,

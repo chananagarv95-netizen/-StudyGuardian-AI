@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared/theme/app_colors.dart';
 
-import '../../core/di/providers.dart';
+import '../../../core/di/providers.dart';
 
 /// A reusable authentication gate that requires PIN or biometric
 /// verification before allowing access to sensitive actions.

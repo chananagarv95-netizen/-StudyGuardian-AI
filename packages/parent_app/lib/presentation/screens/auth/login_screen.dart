@@ -42,10 +42,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       final firestoreService = ref.read(firestoreServiceProvider);
-      final user = await authService.signInWithEmail(
+      final credential = await authService.signInWithEmail(
         _emailController.text.trim(),
         _passwordController.text,
       );
+      final user = credential.user;
       if (user != null && mounted) {
         // Ensure user doc exists
         final userDoc = await firestoreService.getUser(user.uid);
@@ -77,7 +78,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       final firestoreService = ref.read(firestoreServiceProvider);
-      final user = await authService.signInWithGoogle();
+      final credential = await authService.signInWithGoogle();
+      final user = credential?.user;
       if (user != null && mounted) {
         final userDoc = await firestoreService.getUser(user.uid);
         if (userDoc == null) {

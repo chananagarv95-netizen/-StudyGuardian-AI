@@ -38,7 +38,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   @override
   Future<int> getUnreadCount(String familyId) async {
     try {
-      return await _firestoreService.getUnreadNotificationCount(familyId);
+      final notifications =
+          await _firestoreService.getNotificationsByFamily(familyId);
+      return notifications.where((n) => !n.read).length;
     } catch (e, st) {
       AppLogger.e('NotifRepo', 'Failed to get unread count', e, st);
       return 0;

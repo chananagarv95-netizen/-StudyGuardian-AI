@@ -39,7 +39,7 @@ class DeviceRepositoryImpl implements DeviceRepository {
   @override
   Future<void> updateDevice(DeviceModel device) async {
     try {
-      await _firestoreService.updateDevice(device);
+      await _firestoreService.updateDevice(device.id, device.toFirestore());
     } catch (e, st) {
       AppLogger.e('DeviceRepo', 'Failed to update device', e, st);
       rethrow;

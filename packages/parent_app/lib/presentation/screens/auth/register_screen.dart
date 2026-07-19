@@ -42,11 +42,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       final firestoreService = ref.read(firestoreServiceProvider);
-      final user = await authService.signUpWithEmail(
+      final credential = await authService.signUpWithEmail(
         _emailController.text.trim(),
         _passwordController.text,
         _nameController.text.trim(),
       );
+      final user = credential.user;
       if (user != null && mounted) {
         await firestoreService.createUser(UserModel(
           id: user.uid,

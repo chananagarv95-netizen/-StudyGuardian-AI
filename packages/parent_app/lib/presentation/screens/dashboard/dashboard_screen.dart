@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared/utils/duration_utils.dart';
+import 'package:shared/models/app_usage_model.dart';
 import '../../../core/di/providers.dart';
 import '../../../core/utils/extensions.dart';
 import '../../widgets/glass_card.dart';
@@ -356,8 +357,8 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildTopApps(BuildContext context, WidgetRef ref, dynamic usageAsync) {
     final usage = usageAsync.valueOrNull;
-    final apps = usage?.apps ?? [];
-    final sorted = List.of(apps)..sort((a, b) => b.foregroundTime.compareTo(a.foregroundTime));
+    final List<AppUsageModel> apps = (usage?.apps as List<AppUsageModel>?) ?? [];
+    final sorted = List<AppUsageModel>.of(apps)..sort((a, b) => b.foregroundTime.compareTo(a.foregroundTime));
     final top5 = sorted.take(5).toList();
 
     return Column(

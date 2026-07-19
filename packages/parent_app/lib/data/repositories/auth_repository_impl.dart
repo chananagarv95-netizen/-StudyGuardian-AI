@@ -19,8 +19,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserModel> signInWithGoogle() async {
     try {
-      final user = await _authService.signInWithGoogle();
-      if (user == null) throw Exception('Google sign-in failed');
+      final credential = await _authService.signInWithGoogle();
+      if (credential == null) throw Exception('Google sign-in failed');
+      final user = credential.user;
+      if (user == null) throw Exception('Google sign-in returned no user');
 
       // Check if user exists in Firestore, create if not
       var userModel = await _firestoreService.getUser(user.uid);
@@ -46,8 +48,9 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserModel> signInWithEmail(String email, String password) async {
     try {
-      final user = await _authService.signInWithEmail(email, password);
-      if (user == null) throw Exception('Email sign-in failed');
+      final credential = await _authService.signInWithEmail(email, password);
+      final user = credential.user;
+      if (user == null) throw Exception('Email sign-in returned no user');
 
       final userModel = await _firestoreService.getUser(user.uid);
       if (userModel == null) throw Exception('User profile not found');
@@ -62,9 +65,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<UserModel> signUp(
       String email, String password, String displayName) async {
     try {
-      final user =
+      final credential =
           await _authService.signUpWithEmail(email, password, displayName);
-      if (user == null) throw Exception('Sign-up failed');
+      final user = credential.user;
+      if (user == null) throw Exception('Sign-up returned no user');
 
       final userModel = UserModel(
         id: user.uid,
