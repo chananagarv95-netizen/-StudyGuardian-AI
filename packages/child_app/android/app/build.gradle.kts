@@ -9,7 +9,8 @@ plugins {
 
 android {
     namespace = "com.studyguardian.child"
-    compileSdk = 34
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         // Enable support for Java 8+ API desugaring
@@ -25,7 +26,7 @@ android {
     defaultConfig {
         applicationId = "com.studyguardian.child"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = flutter.targetSdkVersion
         versionCode = 1
         versionName = "1.0.0"
 
@@ -78,10 +79,10 @@ dependencies {
 
     // Firebase BoM — manages all Firebase dependency versions
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-messaging")
 
     // AndroidX
     implementation("androidx.core:core-ktx:1.12.0")
